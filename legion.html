@@ -307,13 +307,13 @@ function vShops(){
   }
   const shop=shopById(shopSel);
   if(shopView==='prices'){
-    h+=shopPills()+`<p class="hint">Price list of <b>${esc(shop.name)}</b>: item name and the points it costs. Same list is used for every player.</p>
+    h+=shopPills()+`<div class="pills"><button class="btn-accent" data-additem="${shop.id}">＋ Add item to ${esc(shop.name)}</button></div><p class="hint">Price list of <b>${esc(shop.name)}</b>: item name and the points it costs. Same list is used for every player.</p>
     <div class="wrap"><table><thead><tr><th>Item</th><th>Cost (points)</th><th></th></tr></thead><tbody>`;
     shop.items.forEach(it=>{h+=`<tr><td><input type="text" class="it" value="${esc(it.name)}" data-item="${shop.id}|${it.id}|name" placeholder="Item name"></td>
       <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" value="${val(it.cost)}" data-item="${shop.id}|${it.id}|cost" style="width:100px"></td>
       <td><button class="rm" data-delitem="${shop.id}|${it.id}" title="Remove item">🗑</button></td></tr>`});
-    if(!shop.items.length)h+='<tr><td colspan="3" class="cnt">No items yet. Tap “Add item”.</td></tr>';
-    return h+`</tbody></table></div><p><button class="btn-accent" data-additem="${shop.id}">＋ Add item</button></p>`;
+    if(!shop.items.length)h+='<tr><td colspan="3" class="cnt">No items yet. Tap “＋ Add item” above.</td></tr>';
+    return h+'</tbody></table></div>';
   }
   h+=shopPills()+`<p class="hint">Players' points in <b>${esc(shop.name)}</b> and what they can buy now (×N = how many). Amber = closest item still out of reach.</p>
   <div class="wrap"><table><thead><tr><th>Player</th><th>Points</th><th>Can buy now</th><th>Next goal</th></tr></thead><tbody>`;
