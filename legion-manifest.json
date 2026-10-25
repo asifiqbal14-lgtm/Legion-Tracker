@@ -1,0 +1,13 @@
+{
+  "name": "Legion Daily Activity Tracker",
+  "short_name": "Legion",
+  "start_url": "./legion.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0e1117",
+  "theme_color": "#0b0e14",
+  "icons": [
+    {"src": "legion-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "legion-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

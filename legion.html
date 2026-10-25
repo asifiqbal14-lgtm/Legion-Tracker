@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legion Tracker</title>
+<link rel="manifest" href="legion-manifest.json">
+<meta name="theme-color" content="#0b0e14">
+<link rel="icon" href="legion-icon-192.png">
+<link rel="apple-touch-icon" href="legion-icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{
+  --bg:#0e1117; --panel:#161b24; --panel2:#1d2430; --line:#2a3342; --text:#e6e9ef; --muted:#8b95a7;
+  --accent:#4f9cff; --red:#ef4444; --red-bg:#3a1619; --green:#22c55e; --green-bg:#12381f; --amber:#f5b942;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,Segoe UI,Roboto,sans-serif}
+body{height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+header{flex:none;z-index:30;background:#0b0e14;border-bottom:1px solid var(--line);padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+header h1{font-size:17px;margin:0 8px 0 0;letter-spacing:.3px}
+header .date{color:var(--muted);font-size:13px}
+.sp{flex:1}
+button,.btn{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:6px 12px;border-radius:7px}
+button:hover{border-color:var(--accent)}
+.btn-accent{background:#1d3b66;border-color:#2c5ca0}
+.btn-danger:hover{border-color:var(--red)}
+nav{display:flex;gap:4px;padding:10px 16px 0;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--bg);flex:none;z-index:20}
+nav button{border-radius:8px 8px 0 0;border-bottom:none;background:transparent;color:var(--muted)}
+nav button.on{background:var(--panel);color:var(--text);border-color:var(--line);box-shadow:inset 0 2px 0 var(--accent)}
+main{flex:1;min-height:0;display:flex;flex-direction:column;overflow:auto;padding:14px 16px 16px}
+main>*{flex:none}
+.banner{background:#3b2f10;border:1px solid #6b5316;color:#ffdf8a;padding:10px 14px;border-radius:8px;margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hint{color:var(--muted);font-size:12.5px;margin:0 0 10px}
+.wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);flex:1 1 auto!important;min-height:200px}
+table{border-collapse:separate;border-spacing:0;width:100%}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);text-align:center;white-space:nowrap}
+th{background:var(--panel2);position:sticky;top:0;z-index:5;font-weight:600;font-size:12.5px}
+th.grp{top:0}
+thead tr:nth-child(2) th{top:30px}
+td:first-child,th:first-child{position:sticky;left:0;z-index:6;background:var(--panel2);text-align:left;font-weight:600;min-width:130px}
+thead th:first-child{z-index:8}
+tbody tr:hover td{background:#1a2230}
+tbody tr:hover td:first-child{background:#222c3c}
+input[type=number],input[type=text],select{background:#0e1219;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:5px 6px;font:inherit;width:84px;text-align:center}
+input[type=text].name{width:140px;text-align:left}
+input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px #4f9cff33}
+input[type=number]::-webkit-inner-spin-button{opacity:.4}
+.tg{min-width:58px;padding:5px 8px;border-radius:7px;font-weight:700;border:1px solid var(--red);background:var(--red-bg);color:#ff9a9a}
+.tg.on{border-color:var(--green);background:var(--green-bg);color:#7dffa8}
+.tg.sm{min-width:44px;padding:3px 6px}
+.rk{color:var(--accent);font-weight:700;margin-right:4px}
+.rank{display:flex;gap:4px;align-items:center;justify-content:center}
+.rank button{padding:4px 9px}
+.cnt{font-variant-numeric:tabular-nums;color:var(--muted)}
+.cnt.full{color:var(--green);font-weight:700}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600}
+.b-adv{background:var(--green-bg);color:#7dffa8;border:1px solid var(--green)}
+.b-same{background:#2a2a14;color:var(--amber);border:1px solid #6b5316}
+.b-dem{background:var(--red-bg);color:#ff9a9a;border:1px solid var(--red)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px}
+.card h3{margin:0 0 8px;font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.card table th,.card table td{padding:4px 5px;border-right:none}
+.card table td:first-child,.card table th:first-child{position:static;background:transparent;min-width:0}
+.card .wrap2{border:none}
+.sep td,.sep th{border-top:2px solid var(--line)}
+.toast{position:fixed;bottom:16px;right:16px;background:#12381f;border:1px solid var(--green);color:#9dffc0;padding:6px 12px;border-radius:8px;opacity:0;transition:.25s;pointer-events:none;z-index:50}
+.toast.show{opacity:1}
+.calc{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:12px}
+.calc select,.calc input{width:auto;min-width:90px}
+.leg{display:flex;gap:14px;color:var(--muted);font-size:12.5px;margin:0 0 8px;flex-wrap:wrap}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.rm{padding:2px 8px;color:var(--muted)}
+.rm:hover{color:var(--red);border-color:var(--red)}
+@media (max-width:700px){.cards{grid-template-columns:1fr}}
+@media (max-width:700px),(max-height:620px){
+  header{padding:6px 10px;gap:6px;flex-wrap:nowrap;overflow-x:auto}
+  header h1{font-size:14px;white-space:nowrap;margin:0}
+  header .date{display:none}
+  header button,nav button{white-space:nowrap;padding:5px 9px;font-size:13px}
+  nav{flex-wrap:nowrap;overflow-x:auto;padding:6px 10px 0}
+  main{padding:8px 10px}
+  .hint{display:none}
+  body.typing header,body.typing nav,body.typing .banner{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v9</small></h1>
+  <span class="date" id="dateLbl"></span>
+  <span class="sp"></span>
+  <button id="btnDay" title="Reset all daily Done buttons to red">🌅 New Day</button>
+  <button id="btnWeek" title="Move Current Week damage to Previous Week">📅 New Week</button>
+  <button id="btnCsv">⬇ Excel (CSV)</button>
+  <button id="btnExp">💾 Backup</button>
+  <button id="btnImp">📂 Restore</button>
+  <input type="file" id="fileImp" accept=".json" hidden>
+</header>
+<nav id="tabs"></nav>
+<main id="view"></main>
+<div class="toast" id="toast">Saved</div>
+
+<script>
+/* ============ CONFIG ============ */
+const DAILY=[['mission','Mission Daily'],['lh','LH'],['tc','TC'],['camp','Camp'],['assist','Play Assist'],['endless','Endless'],['drone','Drone'],['sentinel','Sentinel'],['md','MD']];
+const LEGION=[['icarus','Icarus'],['anansi','Anansi'],['hydra','Hydra'],['pegasus','Pegasus'],['charon','Charon'],['jormungand','Jormungand'],['chimera','Chimera']];
+const SEASON=[['atlas','Atlas'],['kraken','Kraken'],['arachne','Arachne']];
+const SETS=[['simple','Simple'],['conq','Conquerer'],['dest','Destroyer'],['thor','Thor'],['optimus','Optimus Prime'],['mega','Megatron']];
+const PIECES=['Main Gun','Wing Gun','Missile','Armor'];
+const TIERS=[ // name, [rankRange,outcome] ..., tierChange, reward
+ ['Bronze',[['1-30','Advance'],['31-50','Unchanged']],'Bronze to Silver',5000],
+ ['Silver',[['1-20','Advance'],['21-35','Unchanged'],['36-50','Demotion to Lower Tier']],'Silver to Gold',7500],
+ ['Gold',[['1-20','Advance'],['21-35','Unchanged'],['36-50','Demotion to Lower Tier']],'Gold to Platinum',10000],
+ ['Platinum',[['1-15','Advance'],['16-35','Unchanged'],['36-50','Demotion to Lower Tier']],'Platinum to Diamond',12500],
+ ['Diamond',[['1-10','Advance'],['11-25','Unchanged'],['26-50','Demotion to Lower Tier']],'Diamond to Masters',18750],
+ ['Master',[['1-10','Advance'],['11-25','Unchanged'],['26-50','Demotion to Lower Tier']],'Master to Legend',25000],
+ ['Legend',[['1-10','Unchanged'],['11-50','Demotion to Lower Tier']],'—',null]
+];
+const KEY='legionTrackerV1';
+
+/* ============ STATE ============ */
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+function blankPlayer(name){
+  const p={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,cc:null,pp:null,bp:null,rare:null,ss:null,loot:null,tcTier:'',tcRank:null,daily:{},legion:{},season:{},gear:{}};
+  DAILY.forEach(([k])=>p.daily[k]=false);
+  LEGION.forEach(([k])=>p.legion[k]=[null,null]);
+  SEASON.forEach(([k])=>p.season[k]=[null,null]);
+  SETS.forEach(([k])=>p.gear[k]=[false,false,false,false]);
+  return p;
+}
+/* Seed = data from Daily_Activity_Report_WF_Updated_23-10-26.xlsx */
+function seed(){
+  const R=[ // name,cc,pp,bp,rare,loot,arachne, legion [prev,cur]x7 (icarus,anansi,hydra,pegasus,charon,jormungand,chimera)
+   ['Maverick',45,1300,35,572,52,60,[[3300,3600],[3200,3600],[3900,null],[2400,3000],[20,null],[20,null],[4500,4700]]],
+   ['DaFlawless',45,1066,30,101,40,40,[[1900,2400],[1800,2000],[1700,null],[1400,2300],[7.5,null],[7.5,null],[2000,2500]]],
+   ['Blackhawk',45,970,22,101,49,40,[[1200,null],[1300,1500],[1100,null],[1100,null],[7.1,null],[null,null],[1500,1800]]],
+   ['War Machine',30,749,7,null,21,null,[[1300,1300],[1100,1400],[1000,null],[944,1200],[0.8,null],[null,null],[1300,1300]]],
+   ['Knightrider',37,802,11,480,47,null,[[1100,null],[1300,1300],[1100,null],[787,1290],[1.4,null],[null,null],[1200,1600]]],
+   ['BruteNose',24,null,5.8,72,7,2.4,[[1100,null],[1100,1400],[1000,null],[898,null],[null,null],[null,null],[1400,1300]]],
+   ['Maverick Bilal',25,781,9,69,10,null,[[1100,null],[1100,null],[1000,null],[856,1000],[0.7,null],[null,null],[1100,null]]],
+   ['Kill Machine',33,null,14,328,32,12,[[1100,null],[1100,1300],[1000,null],[862,1100],[2.2,null],[2.2,null],[1000,null]]],
+   ['EntityX',null,674,null,null,null,null,[[335,442],[566,null],[299,null],[406,null],[null,null],[null,null],[631,null]]],
+   ['JetElite',null,null,null,null,null,null,[[4.3,null],[5,null],[10.4,null],[9.7,null],[null,null],[null,null],[7.4,null]]]
+  ];
+  return R.map(r=>{
+    const p=blankPlayer(r[0]);
+    p.cc=r[1];p.pp=r[2];p.bp=r[3];p.rare=r[4];p.loot=r[5];
+    p.season.arachne=[null,r[6]];
+    LEGION.forEach(([k],i)=>p.legion[k]=r[7][i].slice());
+    if(['Maverick','DaFlawless','Blackhawk','War Machine','Knightrider','BruteNose','Maverick Bilal','Kill Machine'].includes(r[0]))
+      DAILY.forEach(([k])=>p.daily[k]=(k!=='md'));
+    return p;
+  });
+}
+let S;
+function load(){
+  try{const raw=localStorage.getItem(KEY);if(raw){S=JSON.parse(raw);return}}catch(e){}
+  S={date:todayStr(),players:seed()};
+}
+let saveWarned=false;
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S));toast('Saved')}
+  catch(e){if(!saveWarned){saveWarned=true;alert('Browser storage is unavailable here, so changes will be lost on reload. Use 💾 Backup regularly.')}}
+}
+let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),800)}
+const P=id=>S.players.find(p=>p.id===id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const val=v=>v==null?'':v;
+
+/* ============ TABS ============ */
+const TABS=[['daily','✅ Daily Tasks'],['players','👤 Players & Power'],['legion','🐉 Legion Bosses'],['season','🌋 Season Bosses'],['gear','🛡 Titan Gear'],['tier','🏆 TC Tier Guide']];
+let tab=(()=>{try{return localStorage.getItem(KEY+'_tab')||'daily'}catch(e){return 'daily'}})();
+
+function renderTabs(){
+  document.getElementById('tabs').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" class="${k===tab?'on':''}">${l}</button>`).join('');
+}
+function render(){
+  document.getElementById('dateLbl').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'short',year:'numeric'})+'  ·  Tracking day: '+S.date;
+  renderTabs();
+  const v=document.getElementById('view');
+  const oldW=v.querySelector('.wrap'),sx=oldW?oldW.scrollLeft:0,sy=oldW?oldW.scrollTop:0,mt=v.scrollTop,sameTab=v.dataset.shown===tab;
+  const banner=S.date!==todayStr()?`<div class="banner">📆 The day has changed since your last session (${S.date}). <button class="btn-accent" id="bnDay">Start new day (reset Done buttons)</button> <button id="bnKeep">Keep as is</button></div>`:'';
+  v.innerHTML=banner+({daily:vDaily,players:vPlayers,legion:vLegion,season:vSeason,gear:vGear,tier:vTier}[tab])();
+  v.dataset.shown=tab;
+  setTabOrder();
+  if(sameTab){const w=v.querySelector('.wrap');if(w){w.scrollLeft=sx;w.scrollTop=sy}v.scrollTop=mt}
+}
+
+/* Keyboard Next / Tab goes DOWN the column instead of right */
+function setTabOrder(){
+  let n=1;
+  document.querySelectorAll('#view table').forEach(t=>{
+    const rows=[...t.querySelectorAll('tbody tr')];if(!rows.length)return;
+    const cols=Math.max(...rows.map(r=>r.children.length));
+    for(let c=0;c<cols;c++)rows.forEach(r=>{const td=r.children[c];if(!td)return;td.querySelectorAll('input,select').forEach(el=>{el.tabIndex=n++})});
+  });
+}
+/* ============ VIEWS ============ */
+function tg(on,attrs,txt){return `<button class="tg ${on?'on':''}" ${attrs}>${on?'✓ Done':(txt||'✕')}</button>`}
+function vDaily(){
+  let h=`<p class="hint">Click a button to flip it: <b style="color:#ff9a9a">red = not done</b> → <b style="color:#7dffa8">green = done</b>. Click again to undo. “All” marks the whole row.</p>
+  <div class="wrap"><table><thead><tr><th>Player</th>${DAILY.map(d=>`<th>${d[1]}</th>`).join('')}<th>Progress</th><th></th></tr></thead><tbody>`;
+  S.players.forEach((p,i)=>{
+    const n=DAILY.filter(([k])=>p.daily[k]).length;
+    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${DAILY.map(([k])=>`<td>${tg(p.daily[k],`data-tg="${p.id}|daily|${k}"`)}</td>`).join('')}
+    <td class="cnt ${n===DAILY.length?'full':''}">${n}/${DAILY.length}</td><td><button class="tg sm ${n===DAILY.length?'on':''}" data-all="${p.id}">All</button></td></tr>`;
+  });
+  return h+'</tbody></table></div>';
+}
+function vPlayers(){
+  let h=`<p class="hint">Type a number and it saves automatically. CC max is 84. PP = Pull Power. Titan BP is overall power (million) with all Titan gear. Use ▲▼ (or type a number in Rank) to reorder players by ranking; every tab follows this order. Rename or add/remove IDs here.</p>
+  <div class="wrap"><table><thead><tr><th>Player ID</th><th>Rank</th><th>CC Level</th><th>Max PP</th><th>Titan BP (M)</th><th>Rare Earths Collected</th><th>SS Attacks</th><th>Weekly Total Loot</th><th>TC Tier</th><th>TC Rank</th><th>Result</th><th></th></tr></thead><tbody>`;
+  S.players.forEach((p,i)=>{
+    h+=`<tr><td><input type="text" class="name" value="${esc(p.name)}" data-in="${p.id}|name"></td>
+    <td><div class="rank"><button data-mv="${p.id}|-1" title="Move up (better rank)">▲</button><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="1" max="${S.players.length}" step="1" value="${i+1}" data-rank="${p.id}" style="width:56px"><button data-mv="${p.id}|1" title="Move down">▼</button></div></td>
+    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" max="84" step="1" value="${val(p.cc)}" data-in="${p.id}|cc"></td>
+    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.pp)}" data-in="${p.id}|pp"></td>
+    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.bp)}" data-in="${p.id}|bp"></td>
+    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.rare)}" data-in="${p.id}|rare"></td>
+    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.ss)}" data-in="${p.id}|ss"></td>
+    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.loot)}" data-in="${p.id}|loot"></td>
+    <td><select data-in="${p.id}|tcTier"><option value="">—</option>${TIERS.map(t=>`<option ${p.tcTier===t[0]?'selected':''}>${t[0]}</option>`).join('')}</select></td>
+    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="1" max="50" step="1" value="${val(p.tcRank)}" data-in="${p.id}|tcRank" style="width:64px"></td>
+    <td id="res-${p.id}">${resultBadge(p)}</td>
+    <td><button class="rm" data-del="${p.id}" title="Remove player">🗑</button></td></tr>`;
+  });
+  return h+`</tbody></table></div><p><button class="btn-accent" id="addP">＋ Add player</button></p>`;
+}
+function vLegion(){
+  let h=`<p class="hint">Daily Legion Bosses. Enter damage for <b>Previous Week</b> and <b>Current Week</b>. “New Week” (top bar) moves Current → Previous automatically.</p>
+  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${LEGION.map(l=>`<th colspan="2">${l[1]}</th>`).join('')}<th rowspan="2">This week total</th></tr>
+  <tr>${LEGION.map(()=>'<th>Prev</th><th>Curr</th>').join('')}</tr></thead><tbody>`;
+  S.players.forEach((p,i)=>{
+    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${LEGION.map(([k])=>[0,1].map(i=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.legion[k][i])}" data-in="${p.id}|legion|${k}|${i}" style="width:74px"></td>`).join('')).join('')}<td class="cnt" id="lt-${p.id}">${legTotal(p)}</td></tr>`;
+  });
+  return h+'</tbody></table></div>';
+}
+function vSeason(){
+  let h=`<p class="hint">Season Bosses (3-month season, hit once a week; the weekly rewards are paid out Monday by tier and rank). Enter last week's and this week's accumulated damage.</p>
+  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${SEASON.map(l=>`<th colspan="2">${l[1]}</th>`).join('')}</tr><tr>${SEASON.map(()=>'<th>Last Week</th><th>This Week</th>').join('')}</tr></thead><tbody>`;
+  S.players.forEach((p,i)=>{
+    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${SEASON.map(([k])=>[0,1].map(i=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.season[k][i])}" data-in="${p.id}|season|${k}|${i}"></td>`).join('')).join('')}</tr>`;
+  });
+  return h+'</tbody></table></div>';
+}
+function vGear(){
+  let h=`<p class="hint">Mark each Titan gear piece you own. A set with all 4 pieces lights up as full. Overall power itself is entered in “Players & Power”.</p><div class="cards">`;
+  S.players.forEach((p,i)=>{
+    const full=SETS.filter(([k])=>p.gear[k].every(Boolean)).length;
+    h+=`<div class="card"><h3><span><span class="rk">#${i+1}</span> ${esc(p.name)}</span><span class="cnt ${full===6?'full':''}">${full}/6 full sets${p.bp!=null?' · '+p.bp+'M':''}</span></h3>
+    <table><thead><tr><th></th>${PIECES.map(x=>`<th>${x}</th>`).join('')}<th></th></tr></thead><tbody>`;
+    SETS.forEach(([k,l],si)=>{
+      const c=p.gear[k].filter(Boolean).length;
+      h+=`<tr class="${si===1?'sep':''}"><td>${l}</td>${p.gear[k].map((b,i)=>`<td>${tg(b,`data-tg="${p.id}|gear|${k}|${i}"`)}</td>`).join('')}<td class="cnt ${c===4?'full':''}">${c}/4</td></tr>`;
+    });
+    h+='</tbody></table></div>';
+  });
+  return h+'</div>';
+}
+function vTier(){
+  let h=`<div class="calc"><b>Quick check:</b>
+  <select id="cTier">${TIERS.map(t=>`<option>${t[0]}</option>`).join('')}</select>
+  <input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" id="cRank" min="1" max="50" placeholder="Rank (1-50)">
+  <span id="cOut" class="cnt">Pick a tier and rank</span></div>
+  <div class="wrap"><table><thead><tr><th>Category</th><th>Ranking</th><th>Outcome</th><th>Ranking</th><th>Outcome</th><th>Ranking</th><th>Outcome</th><th>Tier Change</th><th>Reward Points</th></tr></thead><tbody>`;
+  TIERS.forEach(t=>{
+    const cells=[0,1,2].map(i=>t[1][i]?`<td>${t[1][i][0]}</td><td><span class="badge ${bcls(t[1][i][1])}">${t[1][i][1]}</span></td>`:'<td></td><td></td>').join('');
+    h+=`<tr><td>${t[0]}</td>${cells}<td>${t[2]}</td><td>${t[3]?t[3].toLocaleString():'—'}</td></tr>`;
+  });
+  return h+'</tbody></table></div>';
+}
+
+/* ============ LOGIC ============ */
+const bcls=o=>o==='Advance'?'b-adv':o==='Unchanged'?'b-same':'b-dem';
+function tierOutcome(tier,rank){
+  const t=TIERS.find(x=>x[0]===tier);if(!t||!rank)return null;
+  for(const [rng,out] of t[1]){const [a,b]=rng.split('-').map(Number);if(rank>=a&&rank<=b)return {out,change:t[2],pts:t[3]}}
+  return null;
+}
+function resultBadge(p){
+  const r=tierOutcome(p.tcTier,p.tcRank);if(!r)return '<span class="cnt">—</span>';
+  return `<span class="badge ${bcls(r.out)}">${r.out==='Advance'?'⬆ '+r.change:r.out==='Unchanged'?'＝ Unchanged':'⬇ Demotion'}</span>${r.out==='Advance'&&r.pts?` <span class="cnt">${r.pts.toLocaleString()} pts</span>`:''}`;
+}
+function legTotal(p){return LEGION.reduce((s,[k])=>s+(+p.legion[k][1]||0),0).toLocaleString(undefined,{maximumFractionDigits:2})}
+function getPath(p,parts){let o=p;for(let i=0;i<parts.length-1;i++)o=o[parts[i]];return [o,parts[parts.length-1]]}
+
+/* ============ EVENTS ============ */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.tab){tab=t.dataset.tab;try{localStorage.setItem(KEY+'_tab',tab)}catch(_){ }render();return}
+  if(t.dataset.tg){
+    const [id,grp,k,i]=t.dataset.tg.split('|');const p=P(id);
+    if(grp==='daily')p.daily[k]=!p.daily[k];else p.gear[k][+i]=!p.gear[k][+i];
+    save();render();return;
+  }
+  if(t.dataset.all){const p=P(t.dataset.all);const allOn=DAILY.every(([k])=>p.daily[k]);DAILY.forEach(([k])=>p.daily[k]=!allOn);save();render();return}
+  if(t.dataset.mv){const [id,d]=t.dataset.mv.split('|');movePlayer(id,S.players.indexOf(P(id))+ +d);return}
+  if(t.dataset.del){const p=P(t.dataset.del);if(confirm('Remove '+p.name+' and all their data?')){S.players=S.players.filter(x=>x!==p);save();render()}return}
+  switch(t.id){
+    case 'addP':{const n=prompt('New player ID name:');if(n&&n.trim()){S.players.push(blankPlayer(n.trim()));save();render()}break}
+    case 'btnDay':case 'bnDay':newDay();break;
+    case 'bnKeep':S.date=todayStr();save();render();break;
+    case 'btnWeek':newWeek();break;
+    case 'btnCsv':exportCsv();break;
+    case 'btnExp':exportJson();break;
+    case 'btnImp':document.getElementById('fileImp').click();break;
+  }
+});
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.id==='cTier'||el.id==='cRank'){
+    const r=tierOutcome(document.getElementById('cTier').value,+document.getElementById('cRank').value);
+    document.getElementById('cOut').innerHTML=r?`<span class="badge ${bcls(r.out)}">${r.out}</span> ${r.out==='Advance'?r.change+' · '+r.pts.toLocaleString()+' reward points':''}`:'Rank outside this tier\'s range';
+    return;
+  }
+  const d=el.dataset.in;if(!d)return;
+  const parts=d.split('|');const p=P(parts[0]);const path=parts.slice(1);
+  const [o,k]=getPath(p,path);
+  if(el.dataset.num){
+    const clean=el.value.replace(/,/g,'.').replace(/[^0-9.]/g,'');if(clean!==el.value)el.value=clean;
+    let v=el.value===''?null:parseFloat(el.value);if(v!=null&&isNaN(v))v=null;
+    if(v!=null&&path[0]==='cc'&&v>84){v=84;el.value=84}
+    if(v!=null&&path[0]==='tcRank'&&v>50){v=50;el.value=50}
+    o[k]=v;
+  }else o[k]=el.value;
+  if(path[0]==='legion'){const c=document.getElementById('lt-'+p.id);if(c)c.textContent=legTotal(p)}
+  if(path[0]==='tcTier'||path[0]==='tcRank'){const c=document.getElementById('res-'+p.id);if(c)c.innerHTML=resultBadge(p)}
+  save();
+});
+/* keep the field visible when the phone keyboard opens */
+let typT;
+document.addEventListener('focusin',e=>{
+  if(!/^(INPUT|SELECT)$/.test(e.target.tagName))return;
+  if(e.target.tagName==='INPUT')e.target.setAttribute('enterkeyhint','enter');
+  clearTimeout(typT);document.body.classList.add('typing');
+  const el=e.target;
+  if(el.tagName==='INPUT'){const sel=()=>{if(document.activeElement===el){try{el.select()}catch(_){}}};setTimeout(sel,0);setTimeout(sel,120)}
+  setTimeout(()=>{try{el.scrollIntoView({block:'center',inline:'nearest'})}catch(_){}},350);
+});
+/* Enter / keyboard action button: go to the box BELOW (same column), not to the right */
+document.addEventListener('keydown',e=>{
+  const el=e.target;
+  if((e.key!=='Enter'&&e.keyCode!==13)||el.tagName!=='INPUT')return;
+  e.preventDefault();
+  if(el.dataset.rank){el.blur();return}
+  const td=el.closest('td');const tr=td&&td.parentElement;if(!tr){el.blur();return}
+  const idx=[...tr.children].indexOf(td);
+  const next=e.shiftKey?tr.previousElementSibling:tr.nextElementSibling;
+  const target=next&&next.children[idx]&&next.children[idx].querySelector('input:not([data-rank]),select');
+  if(target)target.focus();else el.blur();
+});
+document.addEventListener('focusout',()=>{
+  clearTimeout(typT);
+  typT=setTimeout(()=>{if(!/^(INPUT|SELECT)$/.test((document.activeElement||{}).tagName||''))document.body.classList.remove('typing')},250);
+});
+document.addEventListener('change',e=>{
+  const id=e.target.dataset&&e.target.dataset.rank;if(!id)return;
+  const n=parseInt(e.target.value,10);if(!n){render();return}
+  movePlayer(id,n-1);
+});
+document.getElementById('fileImp').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{
+    try{const d=JSON.parse(r.result);if(!d.players)throw 0;if(confirm('Replace all current data with this backup?')){S=d;save();render()}}
+    catch(_){alert('That file is not a valid tracker backup.')}
+    e.target.value='';
+  };r.readAsText(f);
+});
+
+/* ============ ACTIONS ============ */
+function movePlayer(id,to){
+  const from=S.players.findIndex(p=>p.id===id);to=Math.max(0,Math.min(S.players.length-1,to));
+  if(from<0||to===from){render();return}
+  const [p]=S.players.splice(from,1);S.players.splice(to,0,p);save();render();
+}
+function newDay(){
+  if(!confirm('Start a new day? All Daily Task buttons will turn red again. (Numbers are not touched.)'))return;
+  S.players.forEach(p=>DAILY.forEach(([k])=>p.daily[k]=false));
+  S.date=todayStr();save();render();
+}
+function newWeek(){
+  if(!confirm('Start a new week?\n\n• Legion Bosses: Current Week → Previous Week, Current cleared\n• Season Bosses: This Week → Last Week, This Week cleared\n• Weekly Total Loot is cleared\n\nTip: take a 💾 Backup first if unsure.'))return;
+  S.players.forEach((p,i)=>{
+    LEGION.forEach(([k])=>{const a=p.legion[k];if(a[1]!=null)a[0]=a[1];a[1]=null});
+    SEASON.forEach(([k])=>{const a=p.season[k];if(a[1]!=null)a[0]=a[1];a[1]=null});
+    p.loot=null;
+  });
+  save();render();
+}
+function dl(name,mime,data){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:mime}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+function exportJson(){dl('legion-tracker-backup-'+todayStr()+'.json','application/json',JSON.stringify(S,null,1))}
+function exportCsv(){
+  const q=v=>{v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const head=['Player','CC Level','Max PP','Titan BP (M)','Rare Earths','SS Attacks','Weekly Total Loot','TC Tier','TC Rank',
+    ...DAILY.map(d=>d[1]),
+    ...LEGION.flatMap(l=>[l[1]+' Prev',l[1]+' Curr']),
+    ...SEASON.flatMap(l=>[l[1]+' Last',l[1]+' This']),
+    ...SETS.map(s=>s[1]+' pieces (of 4)')];
+  const rows=S.players.map(p=>[p.name,p.cc,p.pp,p.bp,p.rare,p.ss,p.loot,p.tcTier,p.tcRank,
+    ...DAILY.map(([k])=>p.daily[k]?'Done':''),
+    ...LEGION.flatMap(([k])=>p.legion[k]),
+    ...SEASON.flatMap(([k])=>p.season[k]),
+    ...SETS.map(([k])=>p.gear[k].filter(Boolean).length)]);
+  dl('Legion_Report_'+todayStr()+'.csv','text/csv;charset=utf-8','﻿'+[head,...rows].map(r=>r.map(q).join(',')).join('\r\n'));
+}
+
+load();render();
+/* installable + works offline + ask the browser to keep saved data */
+if(location.protocol.startsWith('http')){
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('legion-sw.js').catch(()=>{});
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(_){}
+}
+</script>
+</body>
+</html>
