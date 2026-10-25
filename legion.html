@@ -53,6 +53,13 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4}
 .rk{color:var(--accent);font-weight:700;margin-right:4px}
 .rank{display:flex;gap:4px;align-items:center;justify-content:center}
 .rank button{padding:4px 9px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.pills button.on{background:#1d3b66;border-color:var(--accent)}
+.pills.shops button.on{background:#12381f;border-color:var(--green)}
+td.wc{white-space:normal;text-align:left;min-width:230px}
+.ib{display:inline-block;background:var(--green-bg);border:1px solid var(--green);color:#7dffa8;border-radius:99px;padding:2px 9px;margin:2px;font-size:12.5px}
+.ib.next{background:#2a2a14;border-color:#6b5316;color:var(--amber)}
+td input.it{width:190px;text-align:left}
 .cnt{font-variant-numeric:tabular-nums;color:var(--muted)}
 .cnt.full{color:var(--green);font-weight:700}
 .badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600}
@@ -89,7 +96,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4}
 </head>
 <body>
 <header>
-  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v9</small></h1>
+  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v10</small></h1>
   <span class="date" id="dateLbl"></span>
   <span class="sp"></span>
   <button id="btnDay" title="Reset all daily Done buttons to red">🌅 New Day</button>
@@ -105,7 +112,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4}
 
 <script>
 /* ============ CONFIG ============ */
-const DAILY=[['mission','Mission Daily'],['lh','LH'],['tc','TC'],['camp','Camp'],['assist','Play Assist'],['endless','Endless'],['drone','Drone'],['sentinel','Sentinel'],['md','MD']];
+const DAILY=[['mission','Mission Daily'],['lh','LH'],['tc','TC'],['camp','Camp'],['assist','Play Assist'],['endless','Endless'],['drone','Drone'],['sentinel','Sentinel'],['md','MD'],['chips','Chips'],['tasking','Tasking']];
 const LEGION=[['icarus','Icarus'],['anansi','Anansi'],['hydra','Hydra'],['pegasus','Pegasus'],['charon','Charon'],['jormungand','Jormungand'],['chimera','Chimera']];
 const SEASON=[['atlas','Atlas'],['kraken','Kraken'],['arachne','Arachne']];
 const SETS=[['simple','Simple'],['conq','Conquerer'],['dest','Destroyer'],['thor','Thor'],['optimus','Optimus Prime'],['mega','Megatron']];
@@ -120,6 +127,23 @@ const TIERS=[ // name, [rankRange,outcome] ..., tierChange, reward
  ['Legend',[['1-10','Unchanged'],['11-50','Demotion to Lower Tier']],'—',null]
 ];
 const KEY='legionTrackerV1';
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const SHOP_DEFS=[['titan','Titan Shop'],['star','Star Scramble Shop'],['planet','Planet War Shop'],['battle','Battlefield Shop'],['recycle','Recycling Shop']];
+function defaultShops(){
+  const mk=(id,name,items)=>({id,name,items:items.map(([n,c])=>({id:uid(),name:n,cost:c}))});
+  return SHOP_DEFS.map(([id,name])=>mk(id,name,
+    id==='titan'?[['Main Gun',11000],['Wing Gun',8200],['Missile',8200],['Armor Shield',8200],['Titan Fighter Shards',750]]
+   :id==='planet'?[['Main Gun',33000],['Wing Gun',24600],['Missile',24600],['Armor Shield',24600],['Titan Fighter Shards',2200]]
+   :[]));
+}
+function migrate(){
+  if(!S.shops)S.shops=[];
+  defaultShops().forEach(d=>{if(!S.shops.some(x=>x.id===d.id))S.shops.push(d)});
+  S.players.forEach(p=>{
+    if(!p.points)p.points={};
+    DAILY.forEach(([k])=>{if(p.daily[k]==null)p.daily[k]=false});
+  });
+}
 
 /* ============ STATE ============ */
 const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
@@ -129,6 +153,7 @@ function blankPlayer(name){
   LEGION.forEach(([k])=>p.legion[k]=[null,null]);
   SEASON.forEach(([k])=>p.season[k]=[null,null]);
   SETS.forEach(([k])=>p.gear[k]=[false,false,false,false]);
+  p.points={};
   return p;
 }
 /* Seed = data from Daily_Activity_Report_WF_Updated_23-10-26.xlsx */
@@ -157,8 +182,8 @@ function seed(){
 }
 let S;
 function load(){
-  try{const raw=localStorage.getItem(KEY);if(raw){S=JSON.parse(raw);return}}catch(e){}
-  S={date:todayStr(),players:seed()};
+  try{const raw=localStorage.getItem(KEY);if(raw){S=JSON.parse(raw);migrate();return}}catch(e){}
+  S={date:todayStr(),players:seed(),shops:defaultShops()};migrate();
 }
 let saveWarned=false;
 function save(){
@@ -171,7 +196,7 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const val=v=>v==null?'':v;
 
 /* ============ TABS ============ */
-const TABS=[['daily','✅ Daily Tasks'],['players','👤 Players & Power'],['legion','🐉 Legion Bosses'],['season','🌋 Season Bosses'],['gear','🛡 Titan Gear'],['tier','🏆 TC Tier Guide']];
+const TABS=[['daily','✅ Daily Tasks'],['players','👤 Players & Power'],['legion','🐉 Legion Bosses'],['season','🌋 Season Bosses'],['gear','🛡 Titan Gear'],['shops','🛒 Shops & Resources'],['tier','🏆 TC Tier Guide']];
 let tab=(()=>{try{return localStorage.getItem(KEY+'_tab')||'daily'}catch(e){return 'daily'}})();
 
 function renderTabs(){
@@ -183,7 +208,7 @@ function render(){
   const v=document.getElementById('view');
   const oldW=v.querySelector('.wrap'),sx=oldW?oldW.scrollLeft:0,sy=oldW?oldW.scrollTop:0,mt=v.scrollTop,sameTab=v.dataset.shown===tab;
   const banner=S.date!==todayStr()?`<div class="banner">📆 The day has changed since your last session (${S.date}). <button class="btn-accent" id="bnDay">Start new day (reset Done buttons)</button> <button id="bnKeep">Keep as is</button></div>`:'';
-  v.innerHTML=banner+({daily:vDaily,players:vPlayers,legion:vLegion,season:vSeason,gear:vGear,tier:vTier}[tab])();
+  v.innerHTML=banner+({daily:vDaily,players:vPlayers,legion:vLegion,season:vSeason,gear:vGear,shops:vShops,tier:vTier}[tab])();
   v.dataset.shown=tab;
   setTabOrder();
   if(sameTab){const w=v.querySelector('.wrap');if(w){w.scrollLeft=sx;w.scrollTop=sy}v.scrollTop=mt}
@@ -260,6 +285,43 @@ function vGear(){
   });
   return h+'</div>';
 }
+let shopView='points',shopSel='titan';
+const fmt=n=>(+n).toLocaleString(undefined,{maximumFractionDigits:2});
+function shopById(id){return S.shops.find(x=>x.id===id)||S.shops[0]}
+function canBuy(p,shop){
+  const pts=+((p.points||{})[shop.id])||0;
+  const items=shop.items.filter(i=>+i.cost>0);
+  const can=items.filter(i=>pts>=i.cost).sort((a,b)=>b.cost-a.cost).map(i=>`<span class="ib">${esc(i.name||'?')} ×${Math.floor(pts/i.cost)}</span>`).join('');
+  const nxt=items.filter(i=>pts<i.cost).sort((a,b)=>a.cost-b.cost)[0];
+  return {can:can||'<span class="cnt">nothing yet</span>',next:nxt?`<span class="ib next">${esc(nxt.name||'?')}: need ${fmt(nxt.cost-pts)} more</span>`:(items.length?'<span class="cnt">can buy everything</span>':'<span class="cnt">add items in Price Lists</span>')};
+}
+function vShops(){
+  const sub=[['points','Points (all shops)'],['prices','Price Lists'],['can','Can Buy Now']];
+  let h=`<div class="pills">${sub.map(([k,l])=>`<button data-sub="${k}" class="${k===shopView?'on':''}">${l}</button>`).join('')}</div>`;
+  const shopPills=()=>`<div class="pills shops">${S.shops.map(x=>`<button data-shopsel="${x.id}" class="${x.id===shopSel?'on':''}">${esc(x.name)}</button>`).join('')}</div>`;
+  if(shopView==='points'){
+    h+=`<p class="hint">Type each player's current points in every shop. Enter/Next moves down the column.</p>
+    <div class="wrap"><table><thead><tr><th>Player</th>${S.shops.map(x=>`<th>${esc(x.name)}</th>`).join('')}</tr></thead><tbody>`;
+    S.players.forEach((p,i)=>{h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${S.shops.map(x=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" value="${val(p.points[x.id])}" data-in="${p.id}|points|${x.id}" style="width:92px"></td>`).join('')}</tr>`});
+    return h+'</tbody></table></div>';
+  }
+  const shop=shopById(shopSel);
+  if(shopView==='prices'){
+    h+=shopPills()+`<p class="hint">Price list of <b>${esc(shop.name)}</b>: item name and the points it costs. Same list is used for every player.</p>
+    <div class="wrap"><table><thead><tr><th>Item</th><th>Cost (points)</th><th></th></tr></thead><tbody>`;
+    shop.items.forEach(it=>{h+=`<tr><td><input type="text" class="it" value="${esc(it.name)}" data-item="${shop.id}|${it.id}|name" placeholder="Item name"></td>
+      <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" value="${val(it.cost)}" data-item="${shop.id}|${it.id}|cost" style="width:100px"></td>
+      <td><button class="rm" data-delitem="${shop.id}|${it.id}" title="Remove item">🗑</button></td></tr>`});
+    if(!shop.items.length)h+='<tr><td colspan="3" class="cnt">No items yet. Tap “Add item”.</td></tr>';
+    return h+`</tbody></table></div><p><button class="btn-accent" data-additem="${shop.id}">＋ Add item</button></p>`;
+  }
+  h+=shopPills()+`<p class="hint">Players' points in <b>${esc(shop.name)}</b> and what they can buy now (×N = how many). Amber = closest item still out of reach.</p>
+  <div class="wrap"><table><thead><tr><th>Player</th><th>Points</th><th>Can buy now</th><th>Next goal</th></tr></thead><tbody>`;
+  S.players.forEach((p,i)=>{const c=canBuy(p,shop);
+    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td><td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" value="${val(p.points[shop.id])}" data-in="${p.id}|points|${shop.id}" style="width:92px"></td>
+    <td class="wc" id="cb-${p.id}">${c.can}</td><td class="wc" id="nx-${p.id}">${c.next}</td></tr>`});
+  return h+'</tbody></table></div>';
+}
 function vTier(){
   let h=`<div class="calc"><b>Quick check:</b>
   <select id="cTier">${TIERS.map(t=>`<option>${t[0]}</option>`).join('')}</select>
@@ -298,6 +360,12 @@ document.addEventListener('click',e=>{
   }
   if(t.dataset.all){const p=P(t.dataset.all);const allOn=DAILY.every(([k])=>p.daily[k]);DAILY.forEach(([k])=>p.daily[k]=!allOn);save();render();return}
   if(t.dataset.mv){const [id,d]=t.dataset.mv.split('|');movePlayer(id,S.players.indexOf(P(id))+ +d);return}
+  if(t.dataset.sub){shopView=t.dataset.sub;render();return}
+  if(t.dataset.shopsel){shopSel=t.dataset.shopsel;render();return}
+  if(t.dataset.additem){const sh=shopById(t.dataset.additem);sh.items.push({id:uid(),name:'',cost:null});save();render();
+    const ins=document.querySelectorAll('#view input.it');const l=ins[ins.length-1];if(l)l.focus();return}
+  if(t.dataset.delitem){const [sid,iid]=t.dataset.delitem.split('|');const sh=shopById(sid);const it=sh.items.find(x=>x.id===iid);
+    if(confirm('Remove “'+(it&&it.name||'this item')+'” from '+sh.name+'?')){sh.items=sh.items.filter(x=>x.id!==iid);save();render()}return}
   if(t.dataset.del){const p=P(t.dataset.del);if(confirm('Remove '+p.name+' and all their data?')){S.players=S.players.filter(x=>x!==p);save();render()}return}
   switch(t.id){
     case 'addP':{const n=prompt('New player ID name:');if(n&&n.trim()){S.players.push(blankPlayer(n.trim()));save();render()}break}
@@ -316,6 +384,12 @@ document.addEventListener('input',e=>{
     document.getElementById('cOut').innerHTML=r?`<span class="badge ${bcls(r.out)}">${r.out}</span> ${r.out==='Advance'?r.change+' · '+r.pts.toLocaleString()+' reward points':''}`:'Rank outside this tier\'s range';
     return;
   }
+  if(el.dataset.item){
+    const [sid,iid,f]=el.dataset.item.split('|');const it=shopById(sid).items.find(x=>x.id===iid);if(!it)return;
+    if(f==='name')it.name=el.value;
+    else{const clean=el.value.replace(/,/g,'.').replace(/[^0-9.]/g,'');if(clean!==el.value)el.value=clean;const v=parseFloat(clean);it.cost=isNaN(v)?null:v}
+    save();return;
+  }
   const d=el.dataset.in;if(!d)return;
   const parts=d.split('|');const p=P(parts[0]);const path=parts.slice(1);
   const [o,k]=getPath(p,path);
@@ -326,6 +400,8 @@ document.addEventListener('input',e=>{
     if(v!=null&&path[0]==='tcRank'&&v>50){v=50;el.value=50}
     o[k]=v;
   }else o[k]=el.value;
+  if(path[0]==='points'&&shopView==='can'){const sh=shopById(path[1]);const c=canBuy(p,sh);
+    const a=document.getElementById('cb-'+p.id),b=document.getElementById('nx-'+p.id);if(a)a.innerHTML=c.can;if(b)b.innerHTML=c.next}
   if(path[0]==='legion'){const c=document.getElementById('lt-'+p.id);if(c)c.textContent=legTotal(p)}
   if(path[0]==='tcTier'||path[0]==='tcRank'){const c=document.getElementById('res-'+p.id);if(c)c.innerHTML=resultBadge(p)}
   save();
@@ -337,7 +413,7 @@ document.addEventListener('focusin',e=>{
   if(e.target.tagName==='INPUT')e.target.setAttribute('enterkeyhint','enter');
   clearTimeout(typT);document.body.classList.add('typing');
   const el=e.target;
-  if(el.tagName==='INPUT'){const sel=()=>{if(document.activeElement===el){try{el.select()}catch(_){}}};setTimeout(sel,0);setTimeout(sel,120)}
+  if(el.tagName==='INPUT'){const v0=el.value;const sel=()=>{if(document.activeElement===el&&el.value===v0){try{el.select()}catch(_){}}};setTimeout(sel,0);setTimeout(sel,120)}
   setTimeout(()=>{try{el.scrollIntoView({block:'center',inline:'nearest'})}catch(_){}},350);
 });
 /* Enter / keyboard action button: go to the box BELOW (same column), not to the right */
@@ -364,7 +440,7 @@ document.addEventListener('change',e=>{
 document.getElementById('fileImp').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();r.onload=()=>{
-    try{const d=JSON.parse(r.result);if(!d.players)throw 0;if(confirm('Replace all current data with this backup?')){S=d;save();render()}}
+    try{const d=JSON.parse(r.result);if(!d.players)throw 0;if(confirm('Replace all current data with this backup?')){S=d;migrate();save();render()}}
     catch(_){alert('That file is not a valid tracker backup.')}
     e.target.value='';
   };r.readAsText(f);
@@ -398,12 +474,14 @@ function exportCsv(){
     ...DAILY.map(d=>d[1]),
     ...LEGION.flatMap(l=>[l[1]+' Prev',l[1]+' Curr']),
     ...SEASON.flatMap(l=>[l[1]+' Last',l[1]+' This']),
-    ...SETS.map(s=>s[1]+' pieces (of 4)')];
+    ...SETS.map(s=>s[1]+' pieces (of 4)'),
+    ...S.shops.map(x=>x.name+' Points')];
   const rows=S.players.map(p=>[p.name,p.cc,p.pp,p.bp,p.rare,p.ss,p.loot,p.tcTier,p.tcRank,
     ...DAILY.map(([k])=>p.daily[k]?'Done':''),
     ...LEGION.flatMap(([k])=>p.legion[k]),
     ...SEASON.flatMap(([k])=>p.season[k]),
-    ...SETS.map(([k])=>p.gear[k].filter(Boolean).length)]);
+    ...SETS.map(([k])=>p.gear[k].filter(Boolean).length),
+    ...S.shops.map(x=>p.points[x.id])]);
   dl('Legion_Report_'+todayStr()+'.csv','text/csv;charset=utf-8','﻿'+[head,...rows].map(r=>r.map(q).join(',')).join('\r\n'));
 }
 
