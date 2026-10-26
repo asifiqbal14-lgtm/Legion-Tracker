@@ -26,9 +26,10 @@ button,.btn{font:inherit;cursor:pointer;border:1px solid var(--line);background:
 button:hover{border-color:var(--accent)}
 .btn-accent{background:#1d3b66;border-color:#2c5ca0}
 .btn-danger:hover{border-color:var(--red)}
-nav{display:flex;gap:4px;padding:10px 16px 0;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--bg);flex:none;z-index:20}
-nav button{border-radius:8px 8px 0 0;border-bottom:none;background:transparent;color:var(--muted)}
-nav button.on{background:var(--panel);color:var(--text);border-color:var(--line);box-shadow:inset 0 2px 0 var(--accent)}
+nav{display:flex;gap:10px;padding:12px 16px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--bg);flex:none;z-index:20}
+nav button{border-radius:999px;border:2px solid var(--tc);background:#161b24;color:var(--tc);padding:10px 20px;font-size:16px;font-weight:700}
+nav button:hover{background:var(--tc);color:#0b0e14}
+nav button.on{background:var(--tc);color:#0b0e14;box-shadow:0 3px 12px rgba(0,0,0,.45)}
 main{flex:1;min-height:0;display:flex;flex-direction:column;overflow:auto;padding:14px 16px 16px}
 main>*{flex:none}
 .banner{background:#3b2f10;border:1px solid #6b5316;color:#ffdf8a;padding:10px 14px;border-radius:8px;margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -81,13 +82,26 @@ td input.it{width:190px;text-align:left}
 .leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
 .rm{padding:2px 8px;color:var(--muted)}
 .rm:hover{color:var(--red);border-color:var(--red)}
+.bar{height:8px;background:#0e1219;border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .2s}
+.bar i.full{background:var(--green)}
+.irow{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:8px 0;border-bottom:1px solid var(--line);align-items:center}
+.irow:last-child{border-bottom:none}
+.barrow{grid-column:1/-1}
+.shl{color:var(--muted);font-size:12.5px;margin:6px 0 2px}
+.fcard{border-color:#6b5316}
+.frow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.frow select{width:auto;min-width:80px}
+#view .card{margin-bottom:12px}
+#view .cards .card{margin-bottom:0}
 @media (max-width:700px){.cards{grid-template-columns:1fr}}
 @media (max-width:700px),(max-height:620px){
   header{padding:6px 10px;gap:6px;flex-wrap:nowrap;overflow-x:auto}
   header h1{font-size:14px;white-space:nowrap;margin:0}
   header .date{display:none}
-  header button,nav button{white-space:nowrap;padding:5px 9px;font-size:13px}
-  nav{flex-wrap:nowrap;overflow-x:auto;padding:6px 10px 0}
+  header button{white-space:nowrap;padding:5px 9px;font-size:13px}
+  nav button{white-space:nowrap;padding:9px 16px;font-size:15px}
+  nav{flex-wrap:nowrap;overflow-x:auto;padding:8px 10px;gap:8px}
   main{padding:8px 10px}
   .hint{display:none}
   body.typing header,body.typing nav,body.typing .banner{display:none}
@@ -96,7 +110,7 @@ td input.it{width:190px;text-align:left}
 </head>
 <body>
 <header>
-  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v10</small></h1>
+  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v12</small></h1>
   <span class="date" id="dateLbl"></span>
   <span class="sp"></span>
   <button id="btnDay" title="Reset all daily Done buttons to red">🌅 New Day</button>
@@ -138,9 +152,12 @@ function defaultShops(){
 }
 function migrate(){
   if(!S.shops)S.shops=[];
+  if(S.focus==null)S.focus='';
+  if(S.focusMonth==null)S.focusMonth='';
   defaultShops().forEach(d=>{if(!S.shops.some(x=>x.id===d.id))S.shops.push(d)});
   S.players.forEach(p=>{
     if(!p.points)p.points={};
+    if(!p.focus)p.focus={item:'',qty:1};
     DAILY.forEach(([k])=>{if(p.daily[k]==null)p.daily[k]=false});
   });
 }
@@ -148,7 +165,7 @@ function migrate(){
 /* ============ STATE ============ */
 const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 function blankPlayer(name){
-  const p={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,cc:null,pp:null,bp:null,rare:null,ss:null,loot:null,tcTier:'',tcRank:null,daily:{},legion:{},season:{},gear:{}};
+  const p={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,cc:null,pp:null,bp:null,rare:null,ss:null,loot:null,tcTier:'',tcRank:null,daily:{},legion:{},season:{},gear:{},focus:{item:'',qty:1}};
   DAILY.forEach(([k])=>p.daily[k]=false);
   LEGION.forEach(([k])=>p.legion[k]=[null,null]);
   SEASON.forEach(([k])=>p.season[k]=[null,null]);
@@ -196,11 +213,12 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const val=v=>v==null?'':v;
 
 /* ============ TABS ============ */
-const TABS=[['daily','✅ Daily Tasks'],['players','👤 Players & Power'],['legion','🐉 Legion Bosses'],['season','🌋 Season Bosses'],['gear','🛡 Titan Gear'],['shops','🛒 Shops & Resources'],['tier','🏆 TC Tier Guide']];
+const TABS=[['daily','✅ Daily Tasks','#22c55e'],['players','👤 Players & Power','#4f9cff'],['legion','🐉 Legion Bosses','#a78bfa'],['season','🌋 Season Bosses','#fb923c'],['shops','🛒 Shops & Resources','#2dd4bf']];
 let tab=(()=>{try{return localStorage.getItem(KEY+'_tab')||'daily'}catch(e){return 'daily'}})();
+if(!TABS.some(t=>t[0]===tab))tab='daily';
 
 function renderTabs(){
-  document.getElementById('tabs').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" class="${k===tab?'on':''}">${l}</button>`).join('');
+  document.getElementById('tabs').innerHTML=TABS.map(([k,l,c])=>`<button data-tab="${k}" class="${k===tab?'on':''}" style="--tc:${c}">${l}</button>`).join('');
 }
 function render(){
   document.getElementById('dateLbl').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'short',year:'numeric'})+'  ·  Tracking day: '+S.date;
@@ -285,28 +303,82 @@ function vGear(){
   });
   return h+'</div>';
 }
-let shopView='points',shopSel='titan';
+let shopView='can',shopSel='titan';
 const fmt=n=>(+n).toLocaleString(undefined,{maximumFractionDigits:2});
 function shopById(id){return S.shops.find(x=>x.id===id)||S.shops[0]}
-function canBuy(p,shop){
-  const pts=+((p.points||{})[shop.id])||0;
-  const items=shop.items.filter(i=>+i.cost>0);
-  const can=items.filter(i=>pts>=i.cost).sort((a,b)=>b.cost-a.cost).map(i=>`<span class="ib">${esc(i.name||'?')} ×${Math.floor(pts/i.cost)}</span>`).join('');
-  const nxt=items.filter(i=>pts<i.cost).sort((a,b)=>a.cost-b.cost)[0];
-  return {can:can||'<span class="cnt">nothing yet</span>',next:nxt?`<span class="ib next">${esc(nxt.name||'?')}: need ${fmt(nxt.cost-pts)} more</span>`:(items.length?'<span class="cnt">can buy everything</span>':'<span class="cnt">add items in Price Lists</span>')};
+const normName=s=>String(s||'').trim().toLowerCase();
+let canPid='';
+function allItemNames(){
+  const seen={},out=[];
+  S.shops.forEach(sh=>sh.items.forEach(it=>{const k=normName(it.name);if(k&&+it.cost>0&&!seen[k]){seen[k]=1;out.push(it.name.trim())}}));
+  return out;
 }
+const barHtml=pct=>`<div class="bar"><i class="${pct>=100?'full':''}" style="width:${Math.max(0,Math.min(100,pct))}%"></i></div>`;
+function itemRows(p,filterKey){
+  const rows=[];
+  S.shops.forEach(sh=>sh.items.forEach(it=>{
+    if(!(+it.cost>0))return;
+    if(filterKey&&normName(it.name)!==filterKey)return;
+    const pts=+((p.points||{})[sh.id])||0;
+    rows.push({shop:sh,item:it,pts,n:Math.floor(pts/it.cost),pct:Math.min(100,pts/it.cost*100),need:Math.max(0,it.cost-pts)});
+  }));
+  return rows;
+}
+function itemLine(r){
+  const ready=r.n>=1;
+  return `<div class="irow"><div><b>${esc(r.item.name||'?')}</b> <span class="cnt">· ${fmt(r.item.cost)} pts</span></div>
+  <div>${ready?`<span class="ib">✓ ×${r.n} buyable</span>`:`<span class="cnt">need ${fmt(r.need)} more</span>`} <span class="cnt">${Math.floor(r.pct)}%</span></div>
+  <div class="barrow">${barHtml(r.pct)}</div></div>`;
+}
+function focusBlock(p){
+  const f=p.focus||(p.focus={item:'',qty:1});
+  const qty=Math.max(1,+f.qty||1);
+  let h=`<div class="card fcard"><h3>🎯 Focus Item (this month)</h3>
+  <div class="frow"><select id="focusSel"><option value="">— choose item —</option>${allItemNames().map(n=>`<option ${normName(n)===normName(f.item)?'selected':''}>${esc(n)}</option>`).join('')}</select>
+  <b>Qty needed:</b> <select id="focusQty">${[1,2,3,4,5,6].map(q=>`<option ${q===qty?'selected':''}>${q}</option>`).join('')}</select></div>`;
+  if(!f.item)return h+'<span class="cnt">Choose the item you need this month and how many.</span></div>';
+  const rows=itemRows(p,normName(f.item));
+  if(!rows.length)return h+'<span class="cnt">No shop has this item in its price list.</span></div>';
+  const totalBuy=rows.reduce((s,r)=>s+r.n,0);
+  const maxFrac=Math.max(...rows.map(r=>r.pts/r.item.cost-Math.floor(r.pts/r.item.cost)));
+  const overall=Math.min(100,(totalBuy+(totalBuy>=qty?0:maxFrac))/qty*100);
+  h+=`<div class="irow"><div><b>${qty} × ${esc(f.item)}</b></div><div class="${totalBuy>=qty?'':'cnt'}">${totalBuy>=qty?'<span class="ib">✓ Goal reached</span>':totalBuy+' of '+qty+' buyable'} <span class="cnt">${Math.floor(overall)}%</span></div><div class="barrow">${barHtml(overall)}</div></div>
+  <p class="cnt" style="margin:6px 0 2px">Or buying all ${qty} from one shop:</p>`;
+  rows.forEach(r=>{
+    const need=qty*r.item.cost,pct=Math.min(100,r.pts/need*100);
+    h+=`<div class="shl">${esc(r.shop.name)}: ${fmt(r.pts)} / ${fmt(need)} pts · ${need<=r.pts?'<b style="color:#7dffa8">✓ enough</b>':'need '+fmt(need-r.pts)+' more'} (${Math.floor(pct)}%)</div>`+barHtml(pct);
+  });
+  return h+'</div>';
+}
+function canResult(p){
+  const acc={};
+  S.shops.forEach(sh=>sh.items.forEach(it=>{
+    if(!(+it.cost>0))return;
+    const pts=+((p.points||{})[sh.id])||0,n=Math.floor(pts/it.cost);
+    if(n<1)return;
+    const k=normName(it.name);
+    (acc[k]=acc[k]||{name:it.name,total:0,parts:[]});
+    acc[k].total+=n;acc[k].parts.push(`${esc(sh.name.replace(/ Shop$/,''))} ×${n}`);
+  }));
+  const list=Object.values(acc).sort((a,b)=>b.total-a.total);
+  let h=focusBlock(p);
+  h+=`<div class="card"><h3>🛍 Total you can buy now (all shops)</h3>`+
+    (list.length?list.map(x=>`<div class="irow"><div><b>${esc(x.name)}</b> <span class="ib">×${x.total}</span></div><div class="cnt">${x.parts.join(' + ')}</div></div>`).join(''):'<span class="cnt">Nothing affordable yet.</span>')+'</div>';
+  S.shops.forEach(sh=>{
+    const items=sh.items.filter(i=>+i.cost>0);
+    const pts=+((p.points||{})[sh.id])||0;
+    h+=`<div class="card"><h3><span>${esc(sh.name)}</span><span class="cnt">${fmt(pts)} pts</span></h3>`+
+      (items.length?items.map(it=>itemLine({item:it,n:Math.floor(pts/it.cost),pct:Math.min(100,pts/it.cost*100),need:Math.max(0,it.cost-pts)})).join(''):'<span class="cnt">No items in this price list.</span>')+'</div>';
+  });
+  return h;
+}
+function refreshCan(){const el=document.getElementById('canRes');const p=P(canPid);if(el&&p)el.innerHTML=canResult(p)}
 function vShops(){
-  const sub=[['points','Points (all shops)'],['prices','Price Lists'],['can','Can Buy Now']];
+  const sub=[['can','Can Buy Now'],['prices','Price Lists']];
   let h=`<div class="pills">${sub.map(([k,l])=>`<button data-sub="${k}" class="${k===shopView?'on':''}">${l}</button>`).join('')}</div>`;
   const shopPills=()=>`<div class="pills shops">${S.shops.map(x=>`<button data-shopsel="${x.id}" class="${x.id===shopSel?'on':''}">${esc(x.name)}</button>`).join('')}</div>`;
-  if(shopView==='points'){
-    h+=`<p class="hint">Type each player's current points in every shop. Enter/Next moves down the column.</p>
-    <div class="wrap"><table><thead><tr><th>Player</th>${S.shops.map(x=>`<th>${esc(x.name)}</th>`).join('')}</tr></thead><tbody>`;
-    S.players.forEach((p,i)=>{h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${S.shops.map(x=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" value="${val(p.points[x.id])}" data-in="${p.id}|points|${x.id}" style="width:92px"></td>`).join('')}</tr>`});
-    return h+'</tbody></table></div>';
-  }
-  const shop=shopById(shopSel);
   if(shopView==='prices'){
+    const shop=shopById(shopSel);
     h+=shopPills()+`<div class="pills"><button class="btn-accent" data-additem="${shop.id}">＋ Add item to ${esc(shop.name)}</button></div><p class="hint">Price list of <b>${esc(shop.name)}</b>: item name and the points it costs. Same list is used for every player.</p>
     <div class="wrap"><table><thead><tr><th>Item</th><th>Cost (points)</th><th></th></tr></thead><tbody>`;
     shop.items.forEach(it=>{h+=`<tr><td><input type="text" class="it" value="${esc(it.name)}" data-item="${shop.id}|${it.id}|name" placeholder="Item name"></td>
@@ -315,12 +387,13 @@ function vShops(){
     if(!shop.items.length)h+='<tr><td colspan="3" class="cnt">No items yet. Tap “＋ Add item” above.</td></tr>';
     return h+'</tbody></table></div>';
   }
-  h+=shopPills()+`<p class="hint">Players' points in <b>${esc(shop.name)}</b> and what they can buy now (×N = how many). Amber = closest item still out of reach.</p>
-  <div class="wrap"><table><thead><tr><th>Player</th><th>Points</th><th>Can buy now</th><th>Next goal</th></tr></thead><tbody>`;
-  S.players.forEach((p,i)=>{const c=canBuy(p,shop);
-    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td><td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" value="${val(p.points[shop.id])}" data-in="${p.id}|points|${shop.id}" style="width:92px"></td>
-    <td class="wc" id="cb-${p.id}">${c.can}</td><td class="wc" id="nx-${p.id}">${c.next}</td></tr>`});
-  return h+'</tbody></table></div>';
+  if(!S.players.length)return h+'<p class="cnt">No players.</p>';
+  if(!P(canPid))canPid=S.players[0].id;
+  const cp=P(canPid);
+  h+=`<div class="calc"><b>Player:</b> <select id="canPlayer" style="min-width:170px">${S.players.map((p,i)=>`<option value="${p.id}" ${p.id===canPid?'selected':''}>#${i+1} ${esc(p.name)}</option>`).join('')}</select></div>
+  <div class="card" style="margin-bottom:12px"><h3>Points held</h3><table><tbody>${S.shops.map(x=>`<tr><td>${esc(x.name)}</td><td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" value="${val(cp.points[x.id])}" data-in="${cp.id}|points|${x.id}" style="width:100px"></td></tr>`).join('')}</tbody></table></div>
+  <div id="canRes">${canResult(cp)}</div>`;
+  return h;
 }
 function vTier(){
   let h=`<div class="calc"><b>Quick check:</b>
@@ -400,8 +473,7 @@ document.addEventListener('input',e=>{
     if(v!=null&&path[0]==='tcRank'&&v>50){v=50;el.value=50}
     o[k]=v;
   }else o[k]=el.value;
-  if(path[0]==='points'&&shopView==='can'){const sh=shopById(path[1]);const c=canBuy(p,sh);
-    const a=document.getElementById('cb-'+p.id),b=document.getElementById('nx-'+p.id);if(a)a.innerHTML=c.can;if(b)b.innerHTML=c.next}
+  if(path[0]==='points'&&shopView==='can')refreshCan();
   if(path[0]==='legion'){const c=document.getElementById('lt-'+p.id);if(c)c.textContent=legTotal(p)}
   if(path[0]==='tcTier'||path[0]==='tcRank'){const c=document.getElementById('res-'+p.id);if(c)c.innerHTML=resultBadge(p)}
   save();
@@ -436,6 +508,14 @@ document.addEventListener('change',e=>{
   const id=e.target.dataset&&e.target.dataset.rank;if(!id)return;
   const n=parseInt(e.target.value,10);if(!n){render();return}
   movePlayer(id,n-1);
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='canPlayer'){canPid=e.target.value;render();return}
+  if(e.target.id==='focusSel'||e.target.id==='focusQty'){
+    const p=P(canPid);if(!p)return;if(!p.focus)p.focus={item:'',qty:1};
+    if(e.target.id==='focusSel')p.focus.item=e.target.value;else p.focus.qty=+e.target.value||1;
+    save();refreshCan();
+  }
 });
 document.getElementById('fileImp').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;
