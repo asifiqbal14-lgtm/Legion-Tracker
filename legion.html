@@ -60,7 +60,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4}
 td.wc{white-space:normal;text-align:left;min-width:230px}
 .ib{display:inline-block;background:var(--green-bg);border:1px solid var(--green);color:#7dffa8;border-radius:99px;padding:2px 9px;margin:2px;font-size:12.5px}
 .ib.next{background:#2a2a14;border-color:#6b5316;color:var(--amber)}
-td input.it{width:190px;text-align:left}
+td input.it{width:150px;text-align:left}
 .cnt{font-variant-numeric:tabular-nums;color:var(--muted)}
 .cnt.full{color:var(--green);font-weight:700}
 .badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600}
@@ -90,6 +90,11 @@ td input.it{width:190px;text-align:left}
 .barrow{grid-column:1/-1}
 .shl{color:var(--muted);font-size:12.5px;margin:6px 0 2px}
 .fcard{border-color:#6b5316}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.tile{background:#0e1219;border:2px solid var(--tc);border-radius:16px;padding:12px 10px;text-align:center}
+.tile .tq{font-size:26px;font-weight:800;color:var(--tc);line-height:1.1}
+.tile .tn{font-weight:700;margin-top:4px}
+.tile .ts{color:var(--muted);font-size:12px;margin-top:4px}
 .frow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
 .frow select{width:auto;min-width:80px}
 #view .card{margin-bottom:12px}
@@ -110,7 +115,7 @@ td input.it{width:190px;text-align:left}
 </head>
 <body>
 <header>
-  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v12</small></h1>
+  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v14</small></h1>
   <span class="date" id="dateLbl"></span>
   <span class="sp"></span>
   <button id="btnDay" title="Reset all daily Done buttons to red">🌅 New Day</button>
@@ -314,62 +319,74 @@ function allItemNames(){
   return out;
 }
 const barHtml=pct=>`<div class="bar"><i class="${pct>=100?'full':''}" style="width:${Math.max(0,Math.min(100,pct))}%"></i></div>`;
+const iq=it=>Math.max(1,+it.qty||1);
+function calc(it,pts){
+  const q=iq(it),cost=+it.cost,stock=+it.stock>0?+it.stock:Infinity;
+  const maxPacks=stock===Infinity?Infinity:Math.floor(stock/q);
+  const aff=Math.floor(pts/cost),packs=Math.min(aff,maxPacks);
+  return {q,cost,stock,maxPacks,aff,packs,units:packs*q,capped:aff>maxPacks};
+}
 function itemRows(p,filterKey){
   const rows=[];
   S.shops.forEach(sh=>sh.items.forEach(it=>{
     if(!(+it.cost>0))return;
     if(filterKey&&normName(it.name)!==filterKey)return;
     const pts=+((p.points||{})[sh.id])||0;
-    rows.push({shop:sh,item:it,pts,n:Math.floor(pts/it.cost),pct:Math.min(100,pts/it.cost*100),need:Math.max(0,it.cost-pts)});
+    const c=calc(it,pts);
+    rows.push({shop:sh,item:it,pts,c,n:c.units,pct:c.maxPacks===0?0:Math.min(100,pts/it.cost*100),need:Math.max(0,it.cost-pts)});
   }));
   return rows;
 }
 function itemLine(r){
-  const ready=r.n>=1;
-  return `<div class="irow"><div><b>${esc(r.item.name||'?')}</b> <span class="cnt">· ${fmt(r.item.cost)} pts</span></div>
-  <div>${ready?`<span class="ib">✓ ×${r.n} buyable</span>`:`<span class="cnt">need ${fmt(r.need)} more</span>`} <span class="cnt">${Math.floor(r.pct)}%</span></div>
+  const c=r.c;
+  const sub=`${c.q>1?fmt(c.q)+' for ':''}${fmt(c.cost)} pts${c.stock!==Infinity?' · stock '+fmt(c.stock):''}`;
+  let right;
+  if(c.units>0)right=`<span class="ib">✓ ${fmt(c.units)} buyable</span>${c.capped?' <span class="cnt">(stock limit)</span>':''}`;
+  else if(c.maxPacks===0)right='<span class="cnt">stock too low</span>';
+  else right=`<span class="cnt">need ${fmt(r.need)} more</span>`;
+  return `<div class="irow"><div><b>${esc(r.item.name||'?')}</b> <span class="cnt">· ${sub}</span></div>
+  <div>${right} <span class="cnt">${Math.floor(r.pct)}%</span></div>
   <div class="barrow">${barHtml(r.pct)}</div></div>`;
+}
+function focusRes(p){
+  const f=p.focus,need=Math.max(1,+f.qty||1);
+  if(!f.item)return '<span class="cnt">Choose the item you need this month and how many.</span>';
+  const rows=itemRows(p,normName(f.item));
+  if(!rows.length)return '<span class="cnt">No shop has this item in its price list.</span>';
+  const totalUnits=rows.reduce((t,r)=>t+r.n,0);
+  const fracUnits=Math.max(...rows.map(r=>(r.c.packs<r.c.maxPacks&&r.c.maxPacks>0)?(r.pts/r.item.cost-Math.floor(r.pts/r.item.cost))*r.c.q:0));
+  const overall=Math.min(100,(totalUnits+(totalUnits>=need?0:fracUnits))/need*100);
+  let h=`<div class="irow"><div><b>${fmt(need)} × ${esc(f.item)}</b></div><div>${totalUnits>=need?'<span class="ib">✓ Goal reached</span>':'<span class="cnt">'+fmt(totalUnits)+' of '+fmt(need)+' buyable</span>'} <span class="cnt">${Math.floor(overall)}%</span></div><div class="barrow">${barHtml(overall)}</div></div>
+  <p class="cnt" style="margin:6px 0 2px">If buying all ${fmt(need)} from one shop:</p>`;
+  rows.forEach(r=>{
+    const packs=Math.ceil(need/r.c.q),needPts=packs*r.item.cost,stockOk=r.c.stock>=packs*r.c.q;
+    const pct=stockOk?Math.min(100,r.pts/needPts*100):0;
+    h+=`<div class="shl">${esc(r.shop.name)}: ${fmt(r.pts)} / ${fmt(needPts)} pts · ${!stockOk?'only '+fmt(r.c.stock)+' in stock':needPts<=r.pts?'<b style="color:#7dffa8">✓ enough</b>':'need '+fmt(needPts-r.pts)+' more'} (${Math.floor(pct)}%)</div>`+barHtml(pct);
+  });
+  return h;
 }
 function focusBlock(p){
   const f=p.focus||(p.focus={item:'',qty:1});
-  const qty=Math.max(1,+f.qty||1);
-  let h=`<div class="card fcard"><h3>🎯 Focus Item (this month)</h3>
+  return `<div class="card fcard"><h3>🎯 Focus Item (this month)</h3>
   <div class="frow"><select id="focusSel"><option value="">— choose item —</option>${allItemNames().map(n=>`<option ${normName(n)===normName(f.item)?'selected':''}>${esc(n)}</option>`).join('')}</select>
-  <b>Qty needed:</b> <select id="focusQty">${[1,2,3,4,5,6].map(q=>`<option ${q===qty?'selected':''}>${q}</option>`).join('')}</select></div>`;
-  if(!f.item)return h+'<span class="cnt">Choose the item you need this month and how many.</span></div>';
-  const rows=itemRows(p,normName(f.item));
-  if(!rows.length)return h+'<span class="cnt">No shop has this item in its price list.</span></div>';
-  const totalBuy=rows.reduce((s,r)=>s+r.n,0);
-  const maxFrac=Math.max(...rows.map(r=>r.pts/r.item.cost-Math.floor(r.pts/r.item.cost)));
-  const overall=Math.min(100,(totalBuy+(totalBuy>=qty?0:maxFrac))/qty*100);
-  h+=`<div class="irow"><div><b>${qty} × ${esc(f.item)}</b></div><div class="${totalBuy>=qty?'':'cnt'}">${totalBuy>=qty?'<span class="ib">✓ Goal reached</span>':totalBuy+' of '+qty+' buyable'} <span class="cnt">${Math.floor(overall)}%</span></div><div class="barrow">${barHtml(overall)}</div></div>
-  <p class="cnt" style="margin:6px 0 2px">Or buying all ${qty} from one shop:</p>`;
-  rows.forEach(r=>{
-    const need=qty*r.item.cost,pct=Math.min(100,r.pts/need*100);
-    h+=`<div class="shl">${esc(r.shop.name)}: ${fmt(r.pts)} / ${fmt(need)} pts · ${need<=r.pts?'<b style="color:#7dffa8">✓ enough</b>':'need '+fmt(need-r.pts)+' more'} (${Math.floor(pct)}%)</div>`+barHtml(pct);
-  });
-  return h+'</div>';
+  <b>Qty needed:</b> <input type="text" inputmode="decimal" enterkeyhint="enter" id="focusQtyIn" value="${val(f.qty)}" style="width:80px"></div>
+  <div id="focusRes">${focusRes(p)}</div></div>`;
 }
 function canResult(p){
   const acc={};
   S.shops.forEach(sh=>sh.items.forEach(it=>{
     if(!(+it.cost>0))return;
-    const pts=+((p.points||{})[sh.id])||0,n=Math.floor(pts/it.cost);
-    if(n<1)return;
+    const c=calc(it,+((p.points||{})[sh.id])||0);
+    if(c.units<1)return;
     const k=normName(it.name);
     (acc[k]=acc[k]||{name:it.name,total:0,parts:[]});
-    acc[k].total+=n;acc[k].parts.push(`${esc(sh.name.replace(/ Shop$/,''))} ×${n}`);
+    acc[k].total+=c.units;acc[k].parts.push(`${esc(sh.name.replace(/ Shop$/,''))} ×${fmt(c.units)}`);
   }));
   const list=Object.values(acc).sort((a,b)=>b.total-a.total);
-  let h=focusBlock(p);
-  h+=`<div class="card"><h3>🛍 Total you can buy now (all shops)</h3>`+
-    (list.length?list.map(x=>`<div class="irow"><div><b>${esc(x.name)}</b> <span class="ib">×${x.total}</span></div><div class="cnt">${x.parts.join(' + ')}</div></div>`).join(''):'<span class="cnt">Nothing affordable yet.</span>')+'</div>';
-  S.shops.forEach(sh=>{
-    const items=sh.items.filter(i=>+i.cost>0);
-    const pts=+((p.points||{})[sh.id])||0;
-    h+=`<div class="card"><h3><span>${esc(sh.name)}</span><span class="cnt">${fmt(pts)} pts</span></h3>`+
-      (items.length?items.map(it=>itemLine({item:it,n:Math.floor(pts/it.cost),pct:Math.min(100,pts/it.cost*100),need:Math.max(0,it.cost-pts)})).join(''):'<span class="cnt">No items in this price list.</span>')+'</div>';
-  });
+  const palette=['#4f9cff','#22c55e','#f5b942','#a78bfa','#fb923c','#2dd4bf','#f472b6','#facc15'];
+  let h=`<div class="card"><h3>🛍 Total items you can buy (all shops)</h3>`+
+    (list.length?`<div class="tiles">${list.map((x,i)=>`<div class="tile" style="--tc:${palette[i%palette.length]}"><div class="tq">×${fmt(x.total)}</div><div class="tn">${esc(x.name)}</div><div class="ts">${x.parts.join(' + ')}</div></div>`).join('')}</div>`:'<span class="cnt">Nothing affordable yet.</span>')+'</div>';
+  h+=focusBlock(p);
   return h;
 }
 function refreshCan(){const el=document.getElementById('canRes');const p=P(canPid);if(el&&p)el.innerHTML=canResult(p)}
@@ -379,12 +396,13 @@ function vShops(){
   const shopPills=()=>`<div class="pills shops">${S.shops.map(x=>`<button data-shopsel="${x.id}" class="${x.id===shopSel?'on':''}">${esc(x.name)}</button>`).join('')}</div>`;
   if(shopView==='prices'){
     const shop=shopById(shopSel);
-    h+=shopPills()+`<div class="pills"><button class="btn-accent" data-additem="${shop.id}">＋ Add item to ${esc(shop.name)}</button></div><p class="hint">Price list of <b>${esc(shop.name)}</b>: item name and the points it costs. Same list is used for every player.</p>
-    <div class="wrap"><table><thead><tr><th>Item</th><th>Cost (points)</th><th></th></tr></thead><tbody>`;
+    h+=shopPills()+`<div class="pills"><button class="btn-accent" data-additem="${shop.id}">＋ Add item to ${esc(shop.name)}</button></div><p class="hint">Price list of <b>${esc(shop.name)}</b>: <b>Qty</b> = how many items you get per purchase (e.g. 125 plates), <b>Cost</b> = points for that purchase, <b>Stock</b> = most items the shop sells per month (leave empty if unlimited). Same list for every player.</p>
+    <div class="wrap"><table><thead><tr><th>Item</th><th>Qty</th><th>Cost</th><th>Stock</th><th></th></tr></thead><tbody>`;
+    const nb=(it,f,v)=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" value="${val(v)}" data-item="${shop.id}|${it.id}|${f}" style="width:80px"></td>`;
     shop.items.forEach(it=>{h+=`<tr><td><input type="text" class="it" value="${esc(it.name)}" data-item="${shop.id}|${it.id}|name" placeholder="Item name"></td>
-      <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" value="${val(it.cost)}" data-item="${shop.id}|${it.id}|cost" style="width:100px"></td>
+      ${nb(it,'qty',it.qty==null?1:it.qty)}${nb(it,'cost',it.cost)}${nb(it,'stock',it.stock)}
       <td><button class="rm" data-delitem="${shop.id}|${it.id}" title="Remove item">🗑</button></td></tr>`});
-    if(!shop.items.length)h+='<tr><td colspan="3" class="cnt">No items yet. Tap “＋ Add item” above.</td></tr>';
+    if(!shop.items.length)h+='<tr><td colspan="5" class="cnt">No items yet. Tap “＋ Add item” above.</td></tr>';
     return h+'</tbody></table></div>';
   }
   if(!S.players.length)return h+'<p class="cnt">No players.</p>';
@@ -435,7 +453,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.mv){const [id,d]=t.dataset.mv.split('|');movePlayer(id,S.players.indexOf(P(id))+ +d);return}
   if(t.dataset.sub){shopView=t.dataset.sub;render();return}
   if(t.dataset.shopsel){shopSel=t.dataset.shopsel;render();return}
-  if(t.dataset.additem){const sh=shopById(t.dataset.additem);sh.items.push({id:uid(),name:'',cost:null});save();render();
+  if(t.dataset.additem){const sh=shopById(t.dataset.additem);sh.items.push({id:uid(),name:'',cost:null,qty:1,stock:null});save();render();
     const ins=document.querySelectorAll('#view input.it');const l=ins[ins.length-1];if(l)l.focus();return}
   if(t.dataset.delitem){const [sid,iid]=t.dataset.delitem.split('|');const sh=shopById(sid);const it=sh.items.find(x=>x.id===iid);
     if(confirm('Remove “'+(it&&it.name||'this item')+'” from '+sh.name+'?')){sh.items=sh.items.filter(x=>x.id!==iid);save();render()}return}
@@ -460,8 +478,13 @@ document.addEventListener('input',e=>{
   if(el.dataset.item){
     const [sid,iid,f]=el.dataset.item.split('|');const it=shopById(sid).items.find(x=>x.id===iid);if(!it)return;
     if(f==='name')it.name=el.value;
-    else{const clean=el.value.replace(/,/g,'.').replace(/[^0-9.]/g,'');if(clean!==el.value)el.value=clean;const v=parseFloat(clean);it.cost=isNaN(v)?null:v}
+    else{const clean=el.value.replace(/,/g,'.').replace(/[^0-9.]/g,'');if(clean!==el.value)el.value=clean;const v=parseFloat(clean);it[f]=isNaN(v)?null:v}
     save();return;
+  }
+  if(el.id==='focusQtyIn'){
+    const clean=el.value.replace(/[^0-9]/g,'');if(clean!==el.value)el.value=clean;
+    const p=P(canPid);if(!p)return;p.focus.qty=clean===''?null:parseInt(clean,10);
+    const r=document.getElementById('focusRes');if(r)r.innerHTML=focusRes(p);save();return;
   }
   const d=el.dataset.in;if(!d)return;
   const parts=d.split('|');const p=P(parts[0]);const path=parts.slice(1);
@@ -511,9 +534,9 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('change',e=>{
   if(e.target.id==='canPlayer'){canPid=e.target.value;render();return}
-  if(e.target.id==='focusSel'||e.target.id==='focusQty'){
+  if(e.target.id==='focusSel'){
     const p=P(canPid);if(!p)return;if(!p.focus)p.focus={item:'',qty:1};
-    if(e.target.id==='focusSel')p.focus.item=e.target.value;else p.focus.qty=+e.target.value||1;
+    if(e.target.id==='focusSel')p.focus.item=e.target.value;
     save();refreshCan();
   }
 });
