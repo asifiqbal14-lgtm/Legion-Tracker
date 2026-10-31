@@ -40,12 +40,12 @@ th,td{padding:6px 8px;border-bottom:1px solid var(--line);border-right:1px solid
 th{background:var(--panel2);position:sticky;top:0;z-index:5;font-weight:600;font-size:12.5px}
 th.grp{top:0}
 thead tr:nth-child(2) th{top:30px}
-td:first-child,th:first-child{position:sticky;left:0;z-index:6;background:var(--panel2);text-align:left;font-weight:600;min-width:130px}
-thead th:first-child{z-index:8}
+tbody td:first-child,thead tr:first-child th:first-child{position:sticky;left:0;z-index:6;background:var(--panel2);text-align:left;font-weight:600;width:var(--namew,110px);min-width:var(--namew,110px);max-width:var(--namew,110px);overflow:hidden;text-overflow:ellipsis}
+thead tr:first-child th:first-child{z-index:8}
 tbody tr:hover td{background:#1a2230}
 tbody tr:hover td:first-child{background:#222c3c}
 input[type=number],input[type=text],select{background:#0e1219;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:5px 6px;font:inherit;width:84px;text-align:center}
-input[type=text].name{width:140px;text-align:left}
+input[type=text].name{width:100%;text-align:left}
 input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px #4f9cff33}
 input[type=number]::-webkit-inner-spin-button{opacity:.4}
 .tg{min-width:58px;padding:5px 8px;border-radius:7px;font-weight:700;border:1px solid var(--red);background:var(--red-bg);color:#ff9a9a}
@@ -60,7 +60,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4}
 td.wc{white-space:normal;text-align:left;min-width:230px}
 .ib{display:inline-block;background:var(--green-bg);border:1px solid var(--green);color:#7dffa8;border-radius:99px;padding:2px 9px;margin:2px;font-size:12.5px}
 .ib.next{background:#2a2a14;border-color:#6b5316;color:var(--amber)}
-td input.it{width:150px;text-align:left}
+td input.it{width:100%;text-align:left}
 .cnt{font-variant-numeric:tabular-nums;color:var(--muted)}
 .cnt.full{color:var(--green);font-weight:700}
 .badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600}
@@ -71,7 +71,7 @@ td input.it{width:150px;text-align:left}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px}
 .card h3{margin:0 0 8px;font-size:15px;display:flex;justify-content:space-between;align-items:center}
 .card table th,.card table td{padding:4px 5px;border-right:none}
-.card table td:first-child,.card table th:first-child{position:static;background:transparent;min-width:0}
+.card table td:first-child,.card table th:first-child{position:static;background:transparent;min-width:0;width:auto;max-width:none;overflow:visible}
 .card .wrap2{border:none}
 .sep td,.sep th{border-top:2px solid var(--line)}
 .toast{position:fixed;bottom:16px;right:16px;background:#12381f;border:1px solid var(--green);color:#9dffc0;padding:6px 12px;border-radius:8px;opacity:0;transition:.25s;pointer-events:none;z-index:50}
@@ -99,6 +99,31 @@ td input.it{width:150px;text-align:left}
 .frow select{width:auto;min-width:80px}
 #view .card{margin-bottom:12px}
 #view .cards .card{margin-bottom:0}
+.rsz{position:absolute;right:0;top:0;bottom:0;width:16px;cursor:col-resize;touch-action:none;display:flex;align-items:center;justify-content:center}
+.rsz::after{content:'';width:4px;height:55%;border-radius:3px;background:var(--accent);opacity:.8}
+.ewt{color:var(--amber);font-weight:700}
+.rwwrap{overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);margin-bottom:16px}
+.rwb{min-width:68px;padding:4px 8px;border-radius:7px;font-weight:700;border:1px solid var(--line);background:var(--panel2);color:var(--muted)}
+.rwb.on{border-color:var(--amber);background:#2a2a14;color:var(--amber)}
+.stiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:6px}
+.stile{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--bg);color:var(--tx);border:3px solid var(--bc);border-radius:14px;padding:10px 10px 12px;font-weight:600;min-height:112px;cursor:pointer}
+.stile:hover{border-color:var(--bc);filter:brightness(1.05)}
+.stile .trow{display:flex;gap:8px;align-items:flex-start;width:100%}
+.stile .cbx{flex:none;width:22px;height:22px;border:3px solid var(--bc);border-radius:6px;background:#fff;color:#fff;font-size:15px;line-height:16px;text-align:center;font-weight:900}
+.stile.sel .cbx{background:var(--bc)}
+.stile .ttl{font-size:15px;font-weight:800;line-height:1.2}
+.stile .big{font-size:26px;font-weight:900;line-height:1.1;margin-top:2px}
+.stile .sub{font-size:12.5px;opacity:.8}
+.stile .pill{display:inline-block;background:var(--bc);color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700}
+.stile.sel{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--bc)}
+.buybar{position:sticky;top:0;z-index:12;background:#0f141d;border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:12px;box-shadow:0 6px 16px rgba(0,0,0,.55)}
+.bbmain{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;border-left:5px solid var(--bc);padding-left:10px}
+.stepper{display:flex;gap:8px;align-items:center}
+.stepper button{padding:2px 12px;font-size:18px}
+.bbbtns{display:flex;gap:8px;margin-left:auto}
+button.buy{background:#12381f;border-color:var(--green);color:#9dffc0;font-weight:800;padding:8px 16px}
+.bblast{margin-top:8px}
+.bblast button{padding:2px 10px;margin-left:6px}
 @media (max-width:700px){.cards{grid-template-columns:1fr}}
 @media (max-width:700px),(max-height:620px){
   header{padding:6px 10px;gap:6px;flex-wrap:nowrap;overflow-x:auto}
@@ -115,11 +140,12 @@ td input.it{width:150px;text-align:left}
 </head>
 <body>
 <header>
-  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v14</small></h1>
+  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v19</small></h1>
   <span class="date" id="dateLbl"></span>
   <span class="sp"></span>
   <button id="btnDay" title="Reset all daily Done buttons to red">🌅 New Day</button>
   <button id="btnWeek" title="Move Current Week damage to Previous Week">📅 New Week</button>
+  <button id="btnSeason" title="Start a new 3-month season: everyone back to Bronze">🌋 New Season</button>
   <button id="btnCsv">⬇ Excel (CSV)</button>
   <button id="btnExp">💾 Backup</button>
   <button id="btnImp">📂 Restore</button>
@@ -132,6 +158,11 @@ td input.it{width:150px;text-align:left}
 <script>
 /* ============ CONFIG ============ */
 const DAILY=[['mission','Mission Daily'],['lh','LH'],['tc','TC'],['camp','Camp'],['assist','Play Assist'],['endless','Endless'],['drone','Drone'],['sentinel','Sentinel'],['md','MD'],['chips','Chips'],['tasking','Tasking']];
+const DAILY_GROUPS=[
+ {label:'🌙 Active 9 PM',color:'#a78bfa',cols:[['lh','#c4b5fd'],['tc','#93c5fd'],['camp','#a5b4fc'],['drone','#7dd3fc'],['sentinel','#d8b4fe'],['md','#f0abfc']]},
+ {label:'🌅 Active 12:00 AM',color:'#fbbf24',cols:[['mission','#fde68a'],['assist','#fdba74'],['endless','#fcd34d'],['chips','#fca5a5']]},
+ {label:'Other',color:'#94a3b8',cols:[['tasking','#cbd5e1']]}
+];
 const LEGION=[['icarus','Icarus'],['anansi','Anansi'],['hydra','Hydra'],['pegasus','Pegasus'],['charon','Charon'],['jormungand','Jormungand'],['chimera','Chimera']];
 const SEASON=[['atlas','Atlas'],['kraken','Kraken'],['arachne','Arachne']];
 const SETS=[['simple','Simple'],['conq','Conquerer'],['dest','Destroyer'],['thor','Thor'],['optimus','Optimus Prime'],['mega','Megatron']];
@@ -162,6 +193,9 @@ function migrate(){
   defaultShops().forEach(d=>{if(!S.shops.some(x=>x.id===d.id))S.shops.push(d)});
   S.players.forEach(p=>{
     if(!p.points)p.points={};
+    if(!p.bought)p.bought={};
+    if(!p.rewards)p.rewards={};
+    if(!p.log)p.log=[];
     if(!p.focus)p.focus={item:'',qty:1};
     DAILY.forEach(([k])=>{if(p.daily[k]==null)p.daily[k]=false});
   });
@@ -170,7 +204,7 @@ function migrate(){
 /* ============ STATE ============ */
 const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 function blankPlayer(name){
-  const p={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,cc:null,pp:null,bp:null,rare:null,ss:null,loot:null,tcTier:'',tcRank:null,daily:{},legion:{},season:{},gear:{},focus:{item:'',qty:1}};
+  const p={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,cc:null,pp:null,bp:null,rare:null,ss:null,loot:null,tcTier:'',tcRank:null,daily:{},legion:{},season:{},gear:{},focus:{item:'',qty:1},bought:{},log:[],rewards:{}};
   DAILY.forEach(([k])=>p.daily[k]=false);
   LEGION.forEach(([k])=>p.legion[k]=[null,null]);
   SEASON.forEach(([k])=>p.season[k]=[null,null]);
@@ -218,7 +252,7 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const val=v=>v==null?'':v;
 
 /* ============ TABS ============ */
-const TABS=[['daily','✅ Daily Tasks','#22c55e'],['players','👤 Players & Power','#4f9cff'],['legion','🐉 Legion Bosses','#a78bfa'],['season','🌋 Season Bosses','#fb923c'],['shops','🛒 Shops & Resources','#2dd4bf']];
+const TABS=[['daily','✅ Daily Tasks','#22c55e'],['players','👤 Players & Power','#4f9cff'],['legion','🐉 Legion Hunt','#a78bfa'],['season','🌋 Titan Challenge','#fb923c'],['shops','🛒 Shops & Resources','#2dd4bf']];
 let tab=(()=>{try{return localStorage.getItem(KEY+'_tab')||'daily'}catch(e){return 'daily'}})();
 if(!TABS.some(t=>t[0]===tab))tab='daily';
 
@@ -234,6 +268,7 @@ function render(){
   v.innerHTML=banner+({daily:vDaily,players:vPlayers,legion:vLegion,season:vSeason,gear:vGear,shops:vShops,tier:vTier}[tab])();
   v.dataset.shown=tab;
   setTabOrder();
+  document.querySelectorAll('#view .wrap thead tr:first-child th:first-child').forEach(th=>{const d=document.createElement('span');d.className='rsz';d.title='Drag to resize';th.appendChild(d)});
   if(sameTab){const w=v.querySelector('.wrap');if(w){w.scrollLeft=sx;w.scrollTop=sy}v.scrollTop=mt}
 }
 
@@ -249,48 +284,52 @@ function setTabOrder(){
 /* ============ VIEWS ============ */
 function tg(on,attrs,txt){return `<button class="tg ${on?'on':''}" ${attrs}>${on?'✓ Done':(txt||'✕')}</button>`}
 function vDaily(){
+  const lab=k=>DAILY.find(d=>d[0]===k)[1];
   let h=`<p class="hint">Click a button to flip it: <b style="color:#ff9a9a">red = not done</b> → <b style="color:#7dffa8">green = done</b>. Click again to undo. “All” marks the whole row.</p>
-  <div class="wrap"><table><thead><tr><th>Player</th>${DAILY.map(d=>`<th>${d[1]}</th>`).join('')}<th>Progress</th><th></th></tr></thead><tbody>`;
+  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${DAILY_GROUPS.map(g=>`<th colspan="${g.cols.length}" style="background:${g.color};color:#10131a;text-align:left"><span style="position:sticky;left:calc(var(--namew,110px) + 10px);display:inline-block;white-space:nowrap">${g.label}</span></th>`).join('')}<th rowspan="2">Progress</th><th rowspan="2"></th></tr>
+  <tr>${DAILY_GROUPS.map(g=>g.cols.map(([k,c])=>`<th style="background:${c};color:#10131a">${lab(k)}</th>`).join('')).join('')}</tr></thead><tbody>`;
   S.players.forEach((p,i)=>{
     const n=DAILY.filter(([k])=>p.daily[k]).length;
-    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${DAILY.map(([k])=>`<td>${tg(p.daily[k],`data-tg="${p.id}|daily|${k}"`)}</td>`).join('')}
+    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${DAILY_GROUPS.map(g=>g.cols.map(([k,c])=>`<td style="background:${c}26">${tg(p.daily[k],`data-tg="${p.id}|daily|${k}"`)}</td>`).join('')).join('')}
     <td class="cnt ${n===DAILY.length?'full':''}">${n}/${DAILY.length}</td><td><button class="tg sm ${n===DAILY.length?'on':''}" data-all="${p.id}">All</button></td></tr>`;
   });
   return h+'</tbody></table></div>';
 }
 function vPlayers(){
-  let h=`<p class="hint">Type a number and it saves automatically. CC max is 84. PP = Pull Power. Titan BP is overall power (million) with all Titan gear. Use ▲▼ (or type a number in Rank) to reorder players by ranking; every tab follows this order. Rename or add/remove IDs here.</p>
-  <div class="wrap"><table><thead><tr><th>Player ID</th><th>Rank</th><th>CC Level</th><th>Max PP</th><th>Titan BP (M)</th><th>Rare Earths Collected</th><th>SS Attacks</th><th>Weekly Total Loot</th><th>TC Tier</th><th>TC Rank</th><th>Result</th><th></th></tr></thead><tbody>`;
+  const num=(p,f,extra)=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p[f])}" data-in="${p.id}|${f}" ${extra||''}></td>`;
+  let h=`<p class="hint">Type a number and it saves automatically. CC max is 84. PP = Pull Power. Titan BP is overall power (million) with all Titan gear. Use ▲▼ (or type a number in Rank, last column) to reorder players by ranking; every tab follows this order. Drag the bar on the edge of the Player ID header to resize that column.</p>
+  <div class="wrap"><table><thead><tr><th>Player ID</th><th>Titan BP (M)</th><th>Max PP</th><th>CC Level</th><th>Rare Earths Collected</th><th>Total Weekly Loot</th><th>TC Tier</th><th>TC Rank</th><th>Results</th><th>Rank</th><th></th></tr></thead><tbody>`;
   S.players.forEach((p,i)=>{
     h+=`<tr><td><input type="text" class="name" value="${esc(p.name)}" data-in="${p.id}|name"></td>
-    <td><div class="rank"><button data-mv="${p.id}|-1" title="Move up (better rank)">▲</button><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="1" max="${S.players.length}" step="1" value="${i+1}" data-rank="${p.id}" style="width:56px"><button data-mv="${p.id}|1" title="Move down">▼</button></div></td>
-    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" max="84" step="1" value="${val(p.cc)}" data-in="${p.id}|cc"></td>
-    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.pp)}" data-in="${p.id}|pp"></td>
-    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.bp)}" data-in="${p.id}|bp"></td>
-    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.rare)}" data-in="${p.id}|rare"></td>
-    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.ss)}" data-in="${p.id}|ss"></td>
-    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.loot)}" data-in="${p.id}|loot"></td>
+    ${num(p,'bp')}${num(p,'pp')}<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" max="84" step="1" value="${val(p.cc)}" data-in="${p.id}|cc"></td>${num(p,'rare')}${num(p,'loot')}
     <td><select data-in="${p.id}|tcTier"><option value="">—</option>${TIERS.map(t=>`<option ${p.tcTier===t[0]?'selected':''}>${t[0]}</option>`).join('')}</select></td>
     <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="1" max="50" step="1" value="${val(p.tcRank)}" data-in="${p.id}|tcRank" style="width:64px"></td>
     <td id="res-${p.id}">${resultBadge(p)}</td>
+    <td><div class="rank"><button data-mv="${p.id}|-1" title="Move up (better rank)">▲</button><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="1" max="${S.players.length}" step="1" value="${i+1}" data-rank="${p.id}" style="width:56px"><button data-mv="${p.id}|1" title="Move down">▼</button></div></td>
     <td><button class="rm" data-del="${p.id}" title="Remove player">🗑</button></td></tr>`;
   });
-  return h+`</tbody></table></div><p><button class="btn-accent" id="addP">＋ Add player</button></p>`;
+  h+=`</tbody></table></div><p><button class="btn-accent" id="addP">＋ Add player</button></p>`;
+  const rt=TIERS.filter(t=>t[3]);
+  h+=`<h3 style="margin:14px 0 4px">🎁 Tier rewards already received</h3><p class="hint" style="display:block">A tier reward is paid <b>one time only</b>. If a player is demoted and later advances over the same tier again, no reward is paid. Mark a reward here once a player has received it (“New Week” also marks it automatically for players whose result is Advance).</p>
+  <div class="rwwrap"><table><thead><tr><th>Player ID</th>${rt.map(t=>`<th>${t[2].replace(' to ',' → ')}</th>`).join('')}</tr></thead><tbody>`;
+  S.players.forEach(p=>{h+=`<tr><td>${esc(p.name)}</td>${rt.map(t=>`<td><button class="rwb ${p.rewards[t[0]]?'on':''}" data-rw="${p.id}|${t[0]}" title="${t[2]}: ${t[3].toLocaleString()} pts">${p.rewards[t[0]]?'🎁 Got':'—'}</button></td>`).join('')}</tr>`});
+  return h+'</tbody></table></div>';
 }
+const ewt=v=>(v==null||v==='')?'':fmt(v*14);
 function vLegion(){
-  let h=`<p class="hint">Daily Legion Bosses. Enter damage for <b>Previous Week</b> and <b>Current Week</b>. “New Week” (top bar) moves Current → Previous automatically.</p>
-  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${LEGION.map(l=>`<th colspan="2">${l[1]}</th>`).join('')}<th rowspan="2">This week total</th></tr>
+  let h=`<p class="hint">Legion Hunt: the 7 bosses (Icarus, Anansi, Hydra, Pegasus, Charon, Jormungand, Chimera) are hit <b>daily</b> and the rewards (Technology Points) are paid daily. Enter the damage for <b>Previous</b> and <b>Current</b>. “New Week” (top bar) moves Current → Previous automatically.</p>
+  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${LEGION.map(l=>`<th colspan="2">${l[1]}</th>`).join('')}</tr>
   <tr>${LEGION.map(()=>'<th>Prev</th><th>Curr</th>').join('')}</tr></thead><tbody>`;
   S.players.forEach((p,i)=>{
-    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${LEGION.map(([k])=>[0,1].map(i=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.legion[k][i])}" data-in="${p.id}|legion|${k}|${i}" style="width:74px"></td>`).join('')).join('')}<td class="cnt" id="lt-${p.id}">${legTotal(p)}</td></tr>`;
+    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${LEGION.map(([k])=>[0,1].map(i=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.legion[k][i])}" data-in="${p.id}|legion|${k}|${i}" style="width:74px"></td>`).join('')).join('')}</tr>`;
   });
   return h+'</tbody></table></div>';
 }
 function vSeason(){
-  let h=`<p class="hint">Season Bosses (3-month season, hit once a week; the weekly rewards are paid out Monday by tier and rank). Enter last week's and this week's accumulated damage.</p>
-  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${SEASON.map(l=>`<th colspan="2">${l[1]}</th>`).join('')}</tr><tr>${SEASON.map(()=>'<th>Last Week</th><th>This Week</th>').join('')}</tr></thead><tbody>`;
+  let h=`<p class="hint">Titan Challenge: the 3-month season bosses (Atlas, Kraken, Arachne) are counted <b>weekly</b>; rewards are paid out Monday by tier and rank. Type this week's damage. <b>EWT</b> (Expected Weekly Total) = damage × 14.</p>
+  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${SEASON.map(l=>`<th colspan="2">${l[1]}</th>`).join('')}</tr><tr>${SEASON.map(()=>'<th>This Week</th><th>EWT</th>').join('')}</tr></thead><tbody>`;
   S.players.forEach((p,i)=>{
-    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${SEASON.map(([k])=>[0,1].map(i=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.season[k][i])}" data-in="${p.id}|season|${k}|${i}"></td>`).join('')).join('')}</tr>`;
+    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${SEASON.map(([k])=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.season[k][1])}" data-in="${p.id}|season|${k}|1"></td><td class="cnt ewt" id="ew-${p.id}-${k}">${ewt(p.season[k][1])}</td>`).join('')}</tr>`;
   });
   return h+'</tbody></table></div>';
 }
@@ -320,10 +359,13 @@ function allItemNames(){
 }
 const barHtml=pct=>`<div class="bar"><i class="${pct>=100?'full':''}" style="width:${Math.max(0,Math.min(100,pct))}%"></i></div>`;
 const iq=it=>Math.max(1,+it.qty||1);
-function calc(it,pts){
-  const q=iq(it),cost=+it.cost,stock=+it.stock>0?+it.stock:Infinity;
+const bkey=(sh,it)=>sh.id+'|'+it.id;
+const boughtOf=(p,sh,it)=>+((p.bought||{})[bkey(sh,it)])||0;
+function calc(it,pts,done){
+  const q=iq(it),cost=+it.cost;
+  const stock=+it.stock>0?Math.max(0,+it.stock-(+done||0)):Infinity;
   const maxPacks=stock===Infinity?Infinity:Math.floor(stock/q);
-  const aff=Math.floor(pts/cost),packs=Math.min(aff,maxPacks);
+  const aff=Math.floor(pts/cost+1e-9),packs=Math.min(aff,maxPacks);
   return {q,cost,stock,maxPacks,aff,packs,units:packs*q,capped:aff>maxPacks};
 }
 function itemRows(p,filterKey){
@@ -332,37 +374,31 @@ function itemRows(p,filterKey){
     if(!(+it.cost>0))return;
     if(filterKey&&normName(it.name)!==filterKey)return;
     const pts=+((p.points||{})[sh.id])||0;
-    const c=calc(it,pts);
+    const c=calc(it,pts,boughtOf(p,sh,it));
     rows.push({shop:sh,item:it,pts,c,n:c.units,pct:c.maxPacks===0?0:Math.min(100,pts/it.cost*100),need:Math.max(0,it.cost-pts)});
   }));
   return rows;
 }
-function itemLine(r){
-  const c=r.c;
-  const sub=`${c.q>1?fmt(c.q)+' for ':''}${fmt(c.cost)} pts${c.stock!==Infinity?' · stock '+fmt(c.stock):''}`;
-  let right;
-  if(c.units>0)right=`<span class="ib">✓ ${fmt(c.units)} buyable</span>${c.capped?' <span class="cnt">(stock limit)</span>':''}`;
-  else if(c.maxPacks===0)right='<span class="cnt">stock too low</span>';
-  else right=`<span class="cnt">need ${fmt(r.need)} more</span>`;
-  return `<div class="irow"><div><b>${esc(r.item.name||'?')}</b> <span class="cnt">· ${sub}</span></div>
-  <div>${right} <span class="cnt">${Math.floor(r.pct)}%</span></div>
-  <div class="barrow">${barHtml(r.pct)}</div></div>`;
-}
+const ownedOf=(p,key)=>{let t=0;S.shops.forEach(sh=>sh.items.forEach(it=>{if(normName(it.name)===key)t+=boughtOf(p,sh,it)}));return t};
 function focusRes(p){
   const f=p.focus,need=Math.max(1,+f.qty||1);
   if(!f.item)return '<span class="cnt">Choose the item you need this month and how many.</span>';
-  const rows=itemRows(p,normName(f.item));
+  const key=normName(f.item),rows=itemRows(p,key);
   if(!rows.length)return '<span class="cnt">No shop has this item in its price list.</span>';
-  const totalUnits=rows.reduce((t,r)=>t+r.n,0);
+  const owned=ownedOf(p,key),remain=Math.max(0,need-owned);
+  const totalUnits=rows.reduce((t,r)=>t+r.n,0),canNow=Math.min(totalUnits,remain);
   const fracUnits=Math.max(...rows.map(r=>(r.c.packs<r.c.maxPacks&&r.c.maxPacks>0)?(r.pts/r.item.cost-Math.floor(r.pts/r.item.cost))*r.c.q:0));
-  const overall=Math.min(100,(totalUnits+(totalUnits>=need?0:fracUnits))/need*100);
-  let h=`<div class="irow"><div><b>${fmt(need)} × ${esc(f.item)}</b></div><div>${totalUnits>=need?'<span class="ib">✓ Goal reached</span>':'<span class="cnt">'+fmt(totalUnits)+' of '+fmt(need)+' buyable</span>'} <span class="cnt">${Math.floor(overall)}%</span></div><div class="barrow">${barHtml(overall)}</div></div>
-  <p class="cnt" style="margin:6px 0 2px">If buying all ${fmt(need)} from one shop:</p>`;
-  rows.forEach(r=>{
-    const packs=Math.ceil(need/r.c.q),needPts=packs*r.item.cost,stockOk=r.c.stock>=packs*r.c.q;
-    const pct=stockOk?Math.min(100,r.pts/needPts*100):0;
-    h+=`<div class="shl">${esc(r.shop.name)}: ${fmt(r.pts)} / ${fmt(needPts)} pts · ${!stockOk?'only '+fmt(r.c.stock)+' in stock':needPts<=r.pts?'<b style="color:#7dffa8">✓ enough</b>':'need '+fmt(needPts-r.pts)+' more'} (${Math.floor(pct)}%)</div>`+barHtml(pct);
-  });
+  const overall=remain===0?100:Math.min(100,(owned+canNow+(totalUnits>=remain?0:fracUnits))/need*100);
+  const status=remain===0?'<span class="ib">✓ Goal reached</span>':'<span class="cnt">'+(owned?fmt(owned)+' bought · ':'')+fmt(canNow)+' of '+fmt(remain)+' still-needed buyable</span>';
+  let h=`<div class="irow"><div><b>${fmt(need)} × ${esc(f.item)}</b></div><div>${status} <span class="cnt">${Math.floor(overall)}%</span></div><div class="barrow">${barHtml(overall)}</div></div>`;
+  if(remain>0){
+    h+=`<p class="cnt" style="margin:6px 0 2px">If buying the remaining ${fmt(remain)} from one shop:</p>`;
+    rows.forEach(r=>{
+      const packs=Math.ceil(remain/r.c.q),needPts=packs*r.item.cost,stockOk=r.c.stock>=packs*r.c.q;
+      const pct=stockOk?Math.min(100,r.pts/needPts*100):0;
+      h+=`<div class="shl">${esc(r.shop.name)}: ${fmt(r.pts)} / ${fmt(needPts)} pts · ${!stockOk?'only '+fmt(r.c.stock)+' in stock':needPts<=r.pts?'<b style="color:#7dffa8">✓ enough</b>':'need '+fmt(needPts-r.pts)+' more'} (${Math.floor(pct)}%)</div>`+barHtml(pct);
+    });
+  }
   return h;
 }
 function focusBlock(p){
@@ -372,31 +408,82 @@ function focusBlock(p){
   <b>Qty needed:</b> <input type="text" inputmode="decimal" enterkeyhint="enter" id="focusQtyIn" value="${val(f.qty)}" style="width:80px"></div>
   <div id="focusRes">${focusRes(p)}</div></div>`;
 }
-function canResult(p){
-  const acc={};
-  S.shops.forEach(sh=>sh.items.forEach(it=>{
+/* ----- shop tiles, selection and purchase ----- */
+const SHOP_COL={titan:['#fff1d6','#e8890c','#4a2b00'],star:['#ece3ff','#7c3aed','#26104f'],planet:['#d9f4ec','#10a37f','#04382b'],battle:['#dbeaff','#2f7fe8','#0a2850'],recycle:['#ffdfe9','#e0447a','#52082a']};
+const SHOP_FALL=[['#fff9c4','#d4b106','#3d3300'],['#e0f7fa','#00acc1','#00363d'],['#f3e5f5','#ab47bc','#35103b']];
+const shopCol=(sh,i)=>SHOP_COL[sh.id]||SHOP_FALL[i%SHOP_FALL.length];
+let sel='',selPk=1;
+function selInfo(p){
+  if(!sel)return null;
+  const [sid,iid]=sel.split('|');
+  const sh=S.shops.find(x=>x.id===sid),it=sh&&sh.items.find(x=>x.id===iid);
+  if(!it||!(+it.cost>0))return null;
+  const c=calc(it,+((p.points||{})[sid])||0,boughtOf(p,sh,it));
+  if(c.packs<1)return null;
+  return {sh,it,c,idx:S.shops.indexOf(sh)};
+}
+function buyBar(p){
+  const si=selInfo(p);if(!si)sel='';
+  const log=p.log||[],last=log[log.length-1];
+  let h='<div class="buybar">';
+  if(si){
+    selPk=Math.max(1,Math.min(si.c.packs,selPk));
+    const bc=shopCol(si.sh,si.idx)[1];
+    h+=`<div class="bbmain" style="--bc:${bc}"><div><b>${esc(si.it.name)}</b> <span class="cnt">· ${esc(si.sh.name)}</span></div>
+    <div class="stepper"><button data-selpk="-1">−</button><b>${fmt(selPk)}</b><button data-selpk="1">＋</button><span class="cnt">${si.c.q>1?'× pack of '+fmt(si.c.q):'pcs'}</span></div>
+    <div>= <b>${fmt(selPk*si.c.q)}</b> ${selPk*si.c.q===1?'item':'items'} for <b>${fmt(selPk*si.c.cost)}</b> pts</div>
+    <div class="bbbtns"><button class="buy" data-buy="1">✅ Purchase</button><button data-cancelsel="1">✕</button></div></div>`;
+  }else h+='<span class="cnt">👆 Tap an item tile to select it, then press Purchase.</span>';
+  if(last)h+=`<div class="bblast cnt">Last purchase: ${fmt(last.units)} × ${esc(last.name)} (${fmt(last.cost)} pts) <button data-undo="1">↩ Undo</button></div>`;
+  return h+'</div>';
+}
+function tilesHtml(p){
+  const tiles=[];
+  S.shops.forEach((sh,si)=>sh.items.forEach(it=>{
     if(!(+it.cost>0))return;
-    const c=calc(it,+((p.points||{})[sh.id])||0);
+    const c=calc(it,+((p.points||{})[sh.id])||0,boughtOf(p,sh,it));
     if(c.units<1)return;
-    const k=normName(it.name);
-    (acc[k]=acc[k]||{name:it.name,total:0,parts:[]});
-    acc[k].total+=c.units;acc[k].parts.push(`${esc(sh.name.replace(/ Shop$/,''))} ×${fmt(c.units)}`);
+    const [bg,bc,tx]=shopCol(sh,si),key=sh.id+'|'+it.id,on=key===sel;
+    tiles.push(`<button class="stile${on?' sel':''}" data-tile="${key}" style="--bg:${bg};--bc:${bc};--tx:${tx}"><span class="trow"><span class="cbx">${on?'✓':''}</span><span class="ttl">${esc(it.name||'?')}</span></span><span class="big">×${fmt(c.units)}</span><span class="sub">${esc(sh.name)}</span><span class="pill">${c.q>1?fmt(c.q)+' for ':''}${fmt(c.cost)} pts${c.capped?' · stock limit':''}</span></button>`);
   }));
-  const list=Object.values(acc).sort((a,b)=>b.total-a.total);
-  const palette=['#4f9cff','#22c55e','#f5b942','#a78bfa','#fb923c','#2dd4bf','#f472b6','#facc15'];
-  let h=`<div class="card"><h3>🛍 Total items you can buy (all shops)</h3>`+
-    (list.length?`<div class="tiles">${list.map((x,i)=>`<div class="tile" style="--tc:${palette[i%palette.length]}"><div class="tq">×${fmt(x.total)}</div><div class="tn">${esc(x.name)}</div><div class="ts">${x.parts.join(' + ')}</div></div>`).join('')}</div>`:'<span class="cnt">Nothing affordable yet.</span>')+'</div>';
-  h+=focusBlock(p);
-  return h;
+  return tiles.length?`<div class="stiles">${tiles.join('')}</div>`:'<span class="cnt">Nothing affordable yet.</span>';
+}
+function canResult(p){
+  const bar=buyBar(p);
+  return bar+`<div class="card"><h3>🛍 Items you can buy now <span class="cnt">tap one to select</span></h3>${tilesHtml(p)}</div>`+focusBlock(p);
 }
 function refreshCan(){const el=document.getElementById('canRes');const p=P(canPid);if(el&&p)el.innerHTML=canResult(p)}
+function doBuy(){
+  const p=P(canPid),si=p&&selInfo(p);if(!si)return;
+  const packs=Math.max(1,Math.min(si.c.packs,selPk)),units=packs*si.c.q,cost=packs*si.c.cost;
+  if(!confirm('Buy '+fmt(units)+' × '+si.it.name+' from '+si.sh.name+' for '+fmt(cost)+' points?'))return;
+  const pts=+((p.points||{})[si.sh.id])||0;
+  p.points[si.sh.id]=Math.round((pts-cost)*100)/100;
+  const k=bkey(si.sh,si.it);if(!p.bought)p.bought={};p.bought[k]=(+p.bought[k]||0)+units;
+  if(!p.log)p.log=[];p.log.push({shop:si.sh.id,item:si.it.id,name:si.it.name,units,cost,t:Date.now()});
+  if(p.log.length>100)p.log.shift();
+  sel='';selPk=1;save();render();
+}
+function undoBuy(){
+  const p=P(canPid);if(!p||!p.log||!p.log.length)return;
+  const l=p.log[p.log.length-1];
+  if(!confirm('Undo the last purchase? '+fmt(l.cost)+' points are given back and '+fmt(l.units)+' × '+l.name+' returns to stock.'))return;
+  p.log.pop();
+  p.points[l.shop]=Math.round(((+p.points[l.shop]||0)+l.cost)*100)/100;
+  const k=l.shop+'|'+l.item;if(p.bought&&p.bought[k]!=null)p.bought[k]=Math.max(0,p.bought[k]-l.units);
+  save();render();
+}
+function newMonth(){
+  if(!confirm('Start a new month? Shops restock: every player\'s "bought this month" counts are reset. Points are not touched.'))return;
+  S.players.forEach(p=>{p.bought={};p.log=[]});save();render();
+}
 function vShops(){
   const sub=[['can','Can Buy Now'],['prices','Price Lists']];
-  let h=`<div class="pills">${sub.map(([k,l])=>`<button data-sub="${k}" class="${k===shopView?'on':''}">${l}</button>`).join('')}</div>`;
+  let h=`<div class="pills">${sub.map(([k,l])=>`<button data-sub="${k}" class="${k===shopView?'on':''}">${l}</button>`).join('')}<button data-newmonth="1" title="Restock all shops for every player">🗓 New Month</button></div>`;
   const shopPills=()=>`<div class="pills shops">${S.shops.map(x=>`<button data-shopsel="${x.id}" class="${x.id===shopSel?'on':''}">${esc(x.name)}</button>`).join('')}</div>`;
   if(shopView==='prices'){
     const shop=shopById(shopSel);
-    h+=shopPills()+`<div class="pills"><button class="btn-accent" data-additem="${shop.id}">＋ Add item to ${esc(shop.name)}</button></div><p class="hint">Price list of <b>${esc(shop.name)}</b>: <b>Qty</b> = how many items you get per purchase (e.g. 125 plates), <b>Cost</b> = points for that purchase, <b>Stock</b> = most items the shop sells per month (leave empty if unlimited). Same list for every player.</p>
+    h+=shopPills()+`<div class="pills"><button class="btn-accent" data-additem="${shop.id}">＋ Add item to ${esc(shop.name)}</button></div><p class="hint">Price list of <b>${esc(shop.name)}</b>: <b>Qty</b> = how many items you get per purchase (e.g. 125 plates), <b>Cost</b> = points for that purchase, <b>Stock</b> = most items each player can buy per month (leave empty if unlimited); press 🗓 New Month to restock. Same list for every player.</p>
     <div class="wrap"><table><thead><tr><th>Item</th><th>Qty</th><th>Cost</th><th>Stock</th><th></th></tr></thead><tbody>`;
     const nb=(it,f,v)=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" value="${val(v)}" data-item="${shop.id}|${it.id}|${f}" style="width:80px"></td>`;
     shop.items.forEach(it=>{h+=`<tr><td><input type="text" class="it" value="${esc(it.name)}" data-item="${shop.id}|${it.id}|name" placeholder="Item name"></td>
@@ -435,9 +522,10 @@ function tierOutcome(tier,rank){
 }
 function resultBadge(p){
   const r=tierOutcome(p.tcTier,p.tcRank);if(!r)return '<span class="cnt">—</span>';
-  return `<span class="badge ${bcls(r.out)}">${r.out==='Advance'?'⬆ '+r.change:r.out==='Unchanged'?'＝ Unchanged':'⬇ Demotion'}</span>${r.out==='Advance'&&r.pts?` <span class="cnt">${r.pts.toLocaleString()} pts</span>`:''}`;
+  const got=r.out==='Advance'&&r.pts&&p.rewards&&p.rewards[p.tcTier];
+  return `<span class="badge ${bcls(r.out)}">${r.out==='Advance'?'⬆ '+r.change:r.out==='Unchanged'?'＝ Unchanged':'⬇ Demotion'}</span>`+
+    (got?' <span class="cnt" title="Tier rewards are paid one time only">🎁 already received · no reward</span>':(r.out==='Advance'&&r.pts?` <span class="cnt">${r.pts.toLocaleString()} pts</span>`:''));
 }
-function legTotal(p){return LEGION.reduce((s,[k])=>s+(+p.legion[k][1]||0),0).toLocaleString(undefined,{maximumFractionDigits:2})}
 function getPath(p,parts){let o=p;for(let i=0;i<parts.length-1;i++)o=o[parts[i]];return [o,parts[parts.length-1]]}
 
 /* ============ EVENTS ============ */
@@ -451,6 +539,13 @@ document.addEventListener('click',e=>{
   }
   if(t.dataset.all){const p=P(t.dataset.all);const allOn=DAILY.every(([k])=>p.daily[k]);DAILY.forEach(([k])=>p.daily[k]=!allOn);save();render();return}
   if(t.dataset.mv){const [id,d]=t.dataset.mv.split('|');movePlayer(id,S.players.indexOf(P(id))+ +d);return}
+  if(t.dataset.rw){const [id,tier]=t.dataset.rw.split('|');const p=P(id);p.rewards[tier]=!p.rewards[tier];save();render();return}
+  if(t.dataset.tile){const k=t.dataset.tile;sel=sel===k?'':k;selPk=1;refreshCan();return}
+  if(t.dataset.selpk){selPk+=+t.dataset.selpk;refreshCan();return}
+  if(t.dataset.cancelsel){sel='';refreshCan();return}
+  if(t.dataset.buy){doBuy();return}
+  if(t.dataset.undo){undoBuy();return}
+  if(t.dataset.newmonth){newMonth();return}
   if(t.dataset.sub){shopView=t.dataset.sub;render();return}
   if(t.dataset.shopsel){shopSel=t.dataset.shopsel;render();return}
   if(t.dataset.additem){const sh=shopById(t.dataset.additem);sh.items.push({id:uid(),name:'',cost:null,qty:1,stock:null});save();render();
@@ -463,6 +558,7 @@ document.addEventListener('click',e=>{
     case 'btnDay':case 'bnDay':newDay();break;
     case 'bnKeep':S.date=todayStr();save();render();break;
     case 'btnWeek':newWeek();break;
+    case 'btnSeason':newSeason();break;
     case 'btnCsv':exportCsv();break;
     case 'btnExp':exportJson();break;
     case 'btnImp':document.getElementById('fileImp').click();break;
@@ -497,7 +593,7 @@ document.addEventListener('input',e=>{
     o[k]=v;
   }else o[k]=el.value;
   if(path[0]==='points'&&shopView==='can')refreshCan();
-  if(path[0]==='legion'){const c=document.getElementById('lt-'+p.id);if(c)c.textContent=legTotal(p)}
+  if(path[0]==='season'){const c=document.getElementById('ew-'+p.id+'-'+path[1]);if(c)c.textContent=ewt(o[k])}
   if(path[0]==='tcTier'||path[0]==='tcRank'){const c=document.getElementById('res-'+p.id);if(c)c.innerHTML=resultBadge(p)}
   save();
 });
@@ -533,7 +629,7 @@ document.addEventListener('change',e=>{
   movePlayer(id,n-1);
 });
 document.addEventListener('change',e=>{
-  if(e.target.id==='canPlayer'){canPid=e.target.value;render();return}
+  if(e.target.id==='canPlayer'){canPid=e.target.value;sel='';selPk=1;render();return}
   if(e.target.id==='focusSel'){
     const p=P(canPid);if(!p)return;if(!p.focus)p.focus={item:'',qty:1};
     if(e.target.id==='focusSel')p.focus.item=e.target.value;
@@ -549,6 +645,14 @@ document.getElementById('fileImp').addEventListener('change',e=>{
   };r.readAsText(f);
 });
 
+/* drag the bar on the Player column header to resize it */
+let rz=null;
+document.addEventListener('pointerdown',e=>{const h=e.target.closest&&e.target.closest('.rsz');if(!h)return;e.preventDefault();rz={x:e.clientX,w:h.parentElement.getBoundingClientRect().width};try{h.setPointerCapture(e.pointerId)}catch(_){}});
+document.addEventListener('pointermove',e=>{if(!rz)return;const w=Math.max(70,Math.min(280,Math.round(rz.w+e.clientX-rz.x)));document.documentElement.style.setProperty('--namew',w+'px')});
+const endRz=()=>{if(!rz)return;rz=null;try{localStorage.setItem(KEY+'_namew',document.documentElement.style.getPropertyValue('--namew'))}catch(_){}};
+document.addEventListener('pointerup',endRz);document.addEventListener('pointercancel',endRz);
+try{const w=localStorage.getItem(KEY+'_namew');if(w)document.documentElement.style.setProperty('--namew',w)}catch(_){}
+
 /* ============ ACTIONS ============ */
 function movePlayer(id,to){
   const from=S.players.findIndex(p=>p.id===id);to=Math.max(0,Math.min(S.players.length-1,to));
@@ -560,9 +664,16 @@ function newDay(){
   S.players.forEach(p=>DAILY.forEach(([k])=>p.daily[k]=false));
   S.date=todayStr();save();render();
 }
+function newSeason(){
+  if(!confirm('Start a new season?\n\n• Every player goes back to Bronze (TC Tier = Bronze, TC Rank cleared)\n• “Tier rewards already received” is cleared, so rewards can be earned again\n\nThis cannot be undone. Take a 💾 Backup first if unsure.'))return;
+  const clearBoss=confirm('Also clear Titan Challenge damage (Atlas, Kraken, Arachne) for the new season?\n\nOK = clear it\nCancel = keep it');
+  S.players.forEach(p=>{p.tcTier='Bronze';p.tcRank=null;p.rewards={};if(clearBoss)SEASON.forEach(([k])=>p.season[k]=[null,null])});
+  save();render();
+}
 function newWeek(){
-  if(!confirm('Start a new week?\n\n• Legion Bosses: Current Week → Previous Week, Current cleared\n• Season Bosses: This Week → Last Week, This Week cleared\n• Weekly Total Loot is cleared\n\nTip: take a 💾 Backup first if unsure.'))return;
+  if(!confirm('Start a new week?\n\n• Legion Hunt: Current → Previous, Current cleared\n• Titan Challenge: this week damage cleared (EWT resets)\n• Weekly Total Loot is cleared\n• Players whose TC result is Advance are recorded as having received that tier reward (one time only)\n\nTip: take a 💾 Backup first if unsure.'))return;
   S.players.forEach((p,i)=>{
+    const tr=tierOutcome(p.tcTier,p.tcRank);if(tr&&tr.out==='Advance'&&tr.pts)p.rewards[p.tcTier]=true;
     LEGION.forEach(([k])=>{const a=p.legion[k];if(a[1]!=null)a[0]=a[1];a[1]=null});
     SEASON.forEach(([k])=>{const a=p.season[k];if(a[1]!=null)a[0]=a[1];a[1]=null});
     p.loot=null;
@@ -573,16 +684,16 @@ function dl(name,mime,data){const a=document.createElement('a');a.href=URL.creat
 function exportJson(){dl('legion-tracker-backup-'+todayStr()+'.json','application/json',JSON.stringify(S,null,1))}
 function exportCsv(){
   const q=v=>{v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
-  const head=['Player','CC Level','Max PP','Titan BP (M)','Rare Earths','SS Attacks','Weekly Total Loot','TC Tier','TC Rank',
+  const head=['Player','Titan BP (M)','Max PP','CC Level','Rare Earths','Total Weekly Loot','TC Tier','TC Rank',
     ...DAILY.map(d=>d[1]),
     ...LEGION.flatMap(l=>[l[1]+' Prev',l[1]+' Curr']),
-    ...SEASON.flatMap(l=>[l[1]+' Last',l[1]+' This']),
+    ...SEASON.flatMap(l=>[l[1]+' This Week',l[1]+' EWT']),
     ...SETS.map(s=>s[1]+' pieces (of 4)'),
     ...S.shops.map(x=>x.name+' Points')];
-  const rows=S.players.map(p=>[p.name,p.cc,p.pp,p.bp,p.rare,p.ss,p.loot,p.tcTier,p.tcRank,
+  const rows=S.players.map(p=>[p.name,p.bp,p.pp,p.cc,p.rare,p.loot,p.tcTier,p.tcRank,
     ...DAILY.map(([k])=>p.daily[k]?'Done':''),
     ...LEGION.flatMap(([k])=>p.legion[k]),
-    ...SEASON.flatMap(([k])=>p.season[k]),
+    ...SEASON.flatMap(([k])=>{const v=p.season[k][1];return [v,v==null?'':Math.round(v*14*100)/100]}),
     ...SETS.map(([k])=>p.gear[k].filter(Boolean).length),
     ...S.shops.map(x=>p.points[x.id])]);
   dl('Legion_Report_'+todayStr()+'.csv','text/csv;charset=utf-8','﻿'+[head,...rows].map(r=>r.map(q).join(',')).join('\r\n'));
