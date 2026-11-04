@@ -124,6 +124,21 @@ td input.it{width:100%;text-align:left}
 button.buy{background:#12381f;border-color:var(--green);color:#9dffc0;font-weight:800;padding:8px 16px}
 .bblast{margin-top:8px}
 .bblast button{padding:2px 10px;margin-left:6px}
+.igroups{display:flex;flex-direction:column;gap:10px;padding:6px}
+.igroup{display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:#0e1219;border:1px solid var(--line);border-radius:14px}
+.itile{width:80px;min-height:96px;border:2px solid var(--ic);border-radius:12px;background:#0f141d;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.ichip{flex:none;width:30px;height:30px;border-radius:9px;background:var(--ic);display:inline-flex;align-items:center;justify-content:center;font-size:18px;line-height:1}
+.inm{font-size:11.5px;font-weight:800;line-height:1.15;word-break:break-word}
+.itot{font-size:15px;font-weight:900;color:var(--ic);margin-top:auto}
+.stile.sm{width:80px;min-height:96px;padding:6px 6px 7px;border-width:2px;border-radius:12px;gap:2px}
+.stile.sm .trow{gap:5px;align-items:center}
+.stile.sm .cbx{width:16px;height:16px;border-width:2px;border-radius:4px;font-size:11px;line-height:11px}
+.stile.sm .ttl{font-size:11.5px;line-height:1.1}
+.stile.sm .big{font-size:19px;margin-top:0}
+.stile.sm .pill{font-size:10.5px;padding:1px 5px;border-radius:5px}
+.stile.sm .sub{font-size:10px}
+.stile.sm.sel{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--bc)}
+td input.icn{width:56px;text-align:center}
 @media (max-width:700px){.cards{grid-template-columns:1fr}}
 @media (max-width:700px),(max-height:620px){
   header{padding:6px 10px;gap:6px;flex-wrap:nowrap;overflow-x:auto}
@@ -140,7 +155,7 @@ button.buy{background:#12381f;border-color:var(--green);color:#9dffc0;font-weigh
 </head>
 <body>
 <header>
-  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v19</small></h1>
+  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v21</small></h1>
   <span class="date" id="dateLbl"></span>
   <span class="sp"></span>
   <button id="btnDay" title="Reset all daily Done buttons to red">🌅 New Day</button>
@@ -159,10 +174,11 @@ button.buy{background:#12381f;border-color:var(--green);color:#9dffc0;font-weigh
 /* ============ CONFIG ============ */
 const DAILY=[['mission','Mission Daily'],['lh','LH'],['tc','TC'],['camp','Camp'],['assist','Play Assist'],['endless','Endless'],['drone','Drone'],['sentinel','Sentinel'],['md','MD'],['chips','Chips'],['tasking','Tasking']];
 const DAILY_GROUPS=[
- {label:'🌙 Active 9 PM',color:'#a78bfa',cols:[['lh','#c4b5fd'],['tc','#93c5fd'],['camp','#a5b4fc'],['drone','#7dd3fc'],['sentinel','#d8b4fe'],['md','#f0abfc']]},
- {label:'🌅 Active 12:00 AM',color:'#fbbf24',cols:[['mission','#fde68a'],['assist','#fdba74'],['endless','#fcd34d'],['chips','#fca5a5']]},
+ {label:'🌙 Active 9 PM',color:'#a78bfa',all:true,cols:[['mission','#99f6e4'],['lh','#c4b5fd'],['tc','#93c5fd'],['camp','#a5b4fc'],['drone','#7dd3fc'],['sentinel','#d8b4fe'],['md','#f0abfc']]},
+ {label:'🌅 Active 12:00 AM',color:'#fbbf24',all:true,cols:[['assist','#fdba74'],['endless','#fcd34d'],['chips','#fca5a5']]},
  {label:'Other',color:'#94a3b8',cols:[['tasking','#cbd5e1']]}
 ];
+const LEG_COL=['#fca5a5','#fdba74','#fde68a','#bef264','#86efac','#67e8f9','#c4b5fd'];
 const LEGION=[['icarus','Icarus'],['anansi','Anansi'],['hydra','Hydra'],['pegasus','Pegasus'],['charon','Charon'],['jormungand','Jormungand'],['chimera','Chimera']];
 const SEASON=[['atlas','Atlas'],['kraken','Kraken'],['arachne','Arachne']];
 const SETS=[['simple','Simple'],['conq','Conquerer'],['dest','Destroyer'],['thor','Thor'],['optimus','Optimus Prime'],['mega','Megatron']];
@@ -285,13 +301,14 @@ function setTabOrder(){
 function tg(on,attrs,txt){return `<button class="tg ${on?'on':''}" ${attrs}>${on?'✓ Done':(txt||'✕')}</button>`}
 function vDaily(){
   const lab=k=>DAILY.find(d=>d[0]===k)[1];
-  let h=`<p class="hint">Click a button to flip it: <b style="color:#ff9a9a">red = not done</b> → <b style="color:#7dffa8">green = done</b>. Click again to undo. “All” marks the whole row.</p>
-  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${DAILY_GROUPS.map(g=>`<th colspan="${g.cols.length}" style="background:${g.color};color:#10131a;text-align:left"><span style="position:sticky;left:calc(var(--namew,110px) + 10px);display:inline-block;white-space:nowrap">${g.label}</span></th>`).join('')}<th rowspan="2">Progress</th><th rowspan="2"></th></tr>
-  <tr>${DAILY_GROUPS.map(g=>g.cols.map(([k,c])=>`<th style="background:${c};color:#10131a">${lab(k)}</th>`).join('')).join('')}</tr></thead><tbody>`;
+  const span=g=>g.cols.length+(g.all?1:0);
+  let h=`<p class="hint">Click a button to flip it: <b style="color:#ff9a9a">red = not done</b> → <b style="color:#7dffa8">green = done</b>. Click again to undo. Each group has its own “All” button that marks every activity of that group.</p>
+  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${DAILY_GROUPS.map(g=>`<th colspan="${span(g)}" style="background:${g.color};color:#10131a;text-align:left"><span style="position:sticky;left:calc(var(--namew,110px) + 10px);display:inline-block;white-space:nowrap">${g.label}</span></th>`).join('')}<th rowspan="2">Progress</th></tr>
+  <tr>${DAILY_GROUPS.map(g=>g.cols.map(([k,c])=>`<th style="background:${c};color:#10131a">${lab(k)}</th>`).join('')+(g.all?`<th style="background:${g.color};color:#10131a">All</th>`:'')).join('')}</tr></thead><tbody>`;
   S.players.forEach((p,i)=>{
     const n=DAILY.filter(([k])=>p.daily[k]).length;
-    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${DAILY_GROUPS.map(g=>g.cols.map(([k,c])=>`<td style="background:${c}26">${tg(p.daily[k],`data-tg="${p.id}|daily|${k}"`)}</td>`).join('')).join('')}
-    <td class="cnt ${n===DAILY.length?'full':''}">${n}/${DAILY.length}</td><td><button class="tg sm ${n===DAILY.length?'on':''}" data-all="${p.id}">All</button></td></tr>`;
+    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${DAILY_GROUPS.map((g,gi)=>g.cols.map(([k,c])=>`<td style="background:${c}">${tg(p.daily[k],`data-tg="${p.id}|daily|${k}"`)}</td>`).join('')+(g.all?`<td style="background:${g.color}"><button class="tg sm ${g.cols.every(([k])=>p.daily[k])?'on':''}" data-allg="${p.id}|${gi}">All</button></td>`:'')).join('')}
+    <td class="cnt ${n===DAILY.length?'full':''}">${n}/${DAILY.length}</td></tr>`;
   });
   return h+'</tbody></table></div>';
 }
@@ -317,11 +334,11 @@ function vPlayers(){
 }
 const ewt=v=>(v==null||v==='')?'':fmt(v*14);
 function vLegion(){
-  let h=`<p class="hint">Legion Hunt: the 7 bosses (Icarus, Anansi, Hydra, Pegasus, Charon, Jormungand, Chimera) are hit <b>daily</b> and the rewards (Technology Points) are paid daily. Enter the damage for <b>Previous</b> and <b>Current</b>. “New Week” (top bar) moves Current → Previous automatically.</p>
-  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${LEGION.map(l=>`<th colspan="2">${l[1]}</th>`).join('')}</tr>
-  <tr>${LEGION.map(()=>'<th>Prev</th><th>Curr</th>').join('')}</tr></thead><tbody>`;
+  let h=`<p class="hint">Legion Hunt: the 7 bosses are hit <b>daily</b> and the rewards (Technology Points) are paid daily. Type the damage in each boss column. “New Week” (top bar) clears the damage.</p>
+  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${LEGION.map((l,i)=>`<th style="background:${LEG_COL[i%LEG_COL.length]};color:#10131a">${l[1]}</th>`).join('')}</tr>
+  <tr>${LEGION.map((l,i)=>`<th style="background:${LEG_COL[i%LEG_COL.length]};color:#10131a">Damage</th>`).join('')}</tr></thead><tbody>`;
   S.players.forEach((p,i)=>{
-    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${LEGION.map(([k])=>[0,1].map(i=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.legion[k][i])}" data-in="${p.id}|legion|${k}|${i}" style="width:74px"></td>`).join('')).join('')}</tr>`;
+    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${LEGION.map(([k],bi)=>`<td style="background:${LEG_COL[bi%LEG_COL.length]}"><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.legion[k][1])}" data-in="${p.id}|legion|${k}|1" style="width:74px"></td>`).join('')}</tr>`;
   });
   return h+'</tbody></table></div>';
 }
@@ -429,7 +446,7 @@ function buyBar(p){
   if(si){
     selPk=Math.max(1,Math.min(si.c.packs,selPk));
     const bc=shopCol(si.sh,si.idx)[1];
-    h+=`<div class="bbmain" style="--bc:${bc}"><div><b>${esc(si.it.name)}</b> <span class="cnt">· ${esc(si.sh.name)}</span></div>
+    h+=`<div class="bbmain" style="--bc:${bc}"><div>${(()=>{const ic=itemIcon(si.it.name,si.it.icon);return `<span class="ichip" style="--ic:${ic.col};width:24px;height:24px;font-size:15px;vertical-align:middle">${esc(ic.emoji)}</span>`})()} <b>${esc(si.it.name)}</b> <span class="cnt">· ${esc(si.sh.name)}</span></div>
     <div class="stepper"><button data-selpk="-1">−</button><b>${fmt(selPk)}</b><button data-selpk="1">＋</button><span class="cnt">${si.c.q>1?'× pack of '+fmt(si.c.q):'pcs'}</span></div>
     <div>= <b>${fmt(selPk*si.c.q)}</b> ${selPk*si.c.q===1?'item':'items'} for <b>${fmt(selPk*si.c.cost)}</b> pts</div>
     <div class="bbbtns"><button class="buy" data-buy="1">✅ Purchase</button><button data-cancelsel="1">✕</button></div></div>`;
@@ -437,16 +454,39 @@ function buyBar(p){
   if(last)h+=`<div class="bblast cnt">Last purchase: ${fmt(last.units)} × ${esc(last.name)} (${fmt(last.cost)} pts) <button data-undo="1">↩ Undo</button></div>`;
   return h+'</div>';
 }
-function tilesHtml(p){
-  const tiles=[];
+const ICON_RULES=[[['main gun'],'🔫','#ef4444'],[['wing gun'],'✈️','#3b82f6'],[['missile'],'🚀','#f97316'],[['armor','armour','shield'],'🛡️','#22c55e'],[['badge'],'🎖️','#eab308'],[['drone'],'🛰️','#2dd4bf'],[['pilot'],'🪖','#38bdf8'],[['alloy','plate'],'🔩','#94a3b8'],[['chip'],'💾','#f472b6'],[['rhenite','rare earth'],'🪨','#d4a017'],[['technology'],'🔬','#06b6d4'],[['shard'],'💎','#a78bfa'],[['gun'],'🔫','#ef4444'],[['coin','gold','cash'],'🪙','#facc15']];
+function itemIcon(name,custom){
+  const n=normName(name);let emoji='📦',col=null;
+  for(const [keys,e,c] of ICON_RULES){if(keys.some(k=>n.includes(k))){emoji=e;col=c;break}}
+  if(!col){let h=0;for(const ch of n)h=(h*31+ch.charCodeAt(0))%360;col='hsl('+h+',65%,55%)'}
+  if(custom&&String(custom).trim())emoji=String(custom).trim();
+  return {emoji,col};
+}
+function groupsFor(p){
+  const map={},order=[];
   S.shops.forEach((sh,si)=>sh.items.forEach(it=>{
     if(!(+it.cost>0))return;
     const c=calc(it,+((p.points||{})[sh.id])||0,boughtOf(p,sh,it));
     if(c.units<1)return;
-    const [bg,bc,tx]=shopCol(sh,si),key=sh.id+'|'+it.id,on=key===sel;
-    tiles.push(`<button class="stile${on?' sel':''}" data-tile="${key}" style="--bg:${bg};--bc:${bc};--tx:${tx}"><span class="trow"><span class="cbx">${on?'✓':''}</span><span class="ttl">${esc(it.name||'?')}</span></span><span class="big">×${fmt(c.units)}</span><span class="sub">${esc(sh.name)}</span><span class="pill">${c.q>1?fmt(c.q)+' for ':''}${fmt(c.cost)} pts${c.capped?' · stock limit':''}</span></button>`);
+    const k=normName(it.name)||it.id;
+    let g=map[k];if(!g){g=map[k]={name:it.name,custom:'',total:0,tiles:[]};order.push(k)}
+    if(!g.custom&&it.icon)g.custom=it.icon;
+    g.total+=c.units;g.tiles.push({sh,si,it,c});
   }));
-  return tiles.length?`<div class="stiles">${tiles.join('')}</div>`:'<span class="cnt">Nothing affordable yet.</span>';
+  return order.map(k=>map[k]);
+}
+function tilesHtml(p){
+  const gs=groupsFor(p);
+  if(!gs.length)return '<span class="cnt">Nothing affordable yet.</span>';
+  return '<div class="igroups">'+gs.map(g=>{
+    const ic=itemIcon(g.name,g.custom);
+    let h=`<div class="igroup"><div class="itile" style="--ic:${ic.col}"><span class="ichip" style="--ic:${ic.col}">${esc(ic.emoji)}</span><span class="inm">${esc(g.name||'?')}</span><span class="itot">×${fmt(g.total)}</span></div>`;
+    g.tiles.forEach(({sh,si,it,c})=>{
+      const [bg,bc,tx]=shopCol(sh,si),key=sh.id+'|'+it.id,on=key===sel;
+      h+=`<button class="stile sm${on?' sel':''}" data-tile="${key}" style="--bg:${bg};--bc:${bc};--tx:${tx}"><span class="trow"><span class="cbx">${on?'✓':''}</span><span class="ttl">${esc(sh.name.replace(/ Shop$/,''))}</span></span><span class="big">×${fmt(c.units)}</span><span class="pill">${fmt(c.cost)} pts</span>${c.q>1?`<span class="sub">per ${fmt(c.q)}</span>`:''}${c.capped?'<span class="sub">stock limit</span>':''}</button>`;
+    });
+    return h+'</div>';
+  }).join('')+'</div>';
 }
 function canResult(p){
   const bar=buyBar(p);
@@ -483,13 +523,14 @@ function vShops(){
   const shopPills=()=>`<div class="pills shops">${S.shops.map(x=>`<button data-shopsel="${x.id}" class="${x.id===shopSel?'on':''}">${esc(x.name)}</button>`).join('')}</div>`;
   if(shopView==='prices'){
     const shop=shopById(shopSel);
-    h+=shopPills()+`<div class="pills"><button class="btn-accent" data-additem="${shop.id}">＋ Add item to ${esc(shop.name)}</button></div><p class="hint">Price list of <b>${esc(shop.name)}</b>: <b>Qty</b> = how many items you get per purchase (e.g. 125 plates), <b>Cost</b> = points for that purchase, <b>Stock</b> = most items each player can buy per month (leave empty if unlimited); press 🗓 New Month to restock. Same list for every player.</p>
-    <div class="wrap"><table><thead><tr><th>Item</th><th>Qty</th><th>Cost</th><th>Stock</th><th></th></tr></thead><tbody>`;
+    h+=shopPills()+`<div class="pills"><button class="btn-accent" data-additem="${shop.id}">＋ Add item to ${esc(shop.name)}</button></div><p class="hint">Price list of <b>${esc(shop.name)}</b>: <b>Qty</b> = how many items you get per purchase (e.g. 125 plates), <b>Cost</b> = points for that purchase, <b>Icon</b> = optional emoji for the item (leave empty for the automatic one), <b>Stock</b> = most items each player can buy per month (leave empty if unlimited); press 🗓 New Month to restock. Same list for every player.</p>
+    <div class="wrap"><table><thead><tr><th>Item</th><th>Icon</th><th>Qty</th><th>Cost</th><th>Stock</th><th></th></tr></thead><tbody>`;
     const nb=(it,f,v)=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" value="${val(v)}" data-item="${shop.id}|${it.id}|${f}" style="width:80px"></td>`;
     shop.items.forEach(it=>{h+=`<tr><td><input type="text" class="it" value="${esc(it.name)}" data-item="${shop.id}|${it.id}|name" placeholder="Item name"></td>
+      <td><input type="text" class="icn" value="${esc(it.icon||'')}" placeholder="${esc(itemIcon(it.name).emoji)}" data-item="${shop.id}|${it.id}|icon"></td>
       ${nb(it,'qty',it.qty==null?1:it.qty)}${nb(it,'cost',it.cost)}${nb(it,'stock',it.stock)}
       <td><button class="rm" data-delitem="${shop.id}|${it.id}" title="Remove item">🗑</button></td></tr>`});
-    if(!shop.items.length)h+='<tr><td colspan="5" class="cnt">No items yet. Tap “＋ Add item” above.</td></tr>';
+    if(!shop.items.length)h+='<tr><td colspan="6" class="cnt">No items yet. Tap “＋ Add item” above.</td></tr>';
     return h+'</tbody></table></div>';
   }
   if(!S.players.length)return h+'<p class="cnt">No players.</p>';
@@ -539,6 +580,7 @@ document.addEventListener('click',e=>{
   }
   if(t.dataset.all){const p=P(t.dataset.all);const allOn=DAILY.every(([k])=>p.daily[k]);DAILY.forEach(([k])=>p.daily[k]=!allOn);save();render();return}
   if(t.dataset.mv){const [id,d]=t.dataset.mv.split('|');movePlayer(id,S.players.indexOf(P(id))+ +d);return}
+  if(t.dataset.allg){const [id,gi]=t.dataset.allg.split('|');const p=P(id),keys=DAILY_GROUPS[+gi].cols.map(c=>c[0]);const allOn=keys.every(k=>p.daily[k]);keys.forEach(k=>p.daily[k]=!allOn);save();render();return}
   if(t.dataset.rw){const [id,tier]=t.dataset.rw.split('|');const p=P(id);p.rewards[tier]=!p.rewards[tier];save();render();return}
   if(t.dataset.tile){const k=t.dataset.tile;sel=sel===k?'':k;selPk=1;refreshCan();return}
   if(t.dataset.selpk){selPk+=+t.dataset.selpk;refreshCan();return}
@@ -574,6 +616,7 @@ document.addEventListener('input',e=>{
   if(el.dataset.item){
     const [sid,iid,f]=el.dataset.item.split('|');const it=shopById(sid).items.find(x=>x.id===iid);if(!it)return;
     if(f==='name')it.name=el.value;
+    else if(f==='icon')it.icon=el.value;
     else{const clean=el.value.replace(/,/g,'.').replace(/[^0-9.]/g,'');if(clean!==el.value)el.value=clean;const v=parseFloat(clean);it[f]=isNaN(v)?null:v}
     save();return;
   }
@@ -671,7 +714,7 @@ function newSeason(){
   save();render();
 }
 function newWeek(){
-  if(!confirm('Start a new week?\n\n• Legion Hunt: Current → Previous, Current cleared\n• Titan Challenge: this week damage cleared (EWT resets)\n• Weekly Total Loot is cleared\n• Players whose TC result is Advance are recorded as having received that tier reward (one time only)\n\nTip: take a 💾 Backup first if unsure.'))return;
+  if(!confirm('Start a new week?\n\n• Legion Hunt: damage cleared\n• Titan Challenge: this week damage cleared (EWT resets)\n• Weekly Total Loot is cleared\n• Players whose TC result is Advance are recorded as having received that tier reward (one time only)\n\nTip: take a 💾 Backup first if unsure.'))return;
   S.players.forEach((p,i)=>{
     const tr=tierOutcome(p.tcTier,p.tcRank);if(tr&&tr.out==='Advance'&&tr.pts)p.rewards[p.tcTier]=true;
     LEGION.forEach(([k])=>{const a=p.legion[k];if(a[1]!=null)a[0]=a[1];a[1]=null});
@@ -686,13 +729,13 @@ function exportCsv(){
   const q=v=>{v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
   const head=['Player','Titan BP (M)','Max PP','CC Level','Rare Earths','Total Weekly Loot','TC Tier','TC Rank',
     ...DAILY.map(d=>d[1]),
-    ...LEGION.flatMap(l=>[l[1]+' Prev',l[1]+' Curr']),
+    ...LEGION.map(l=>l[1]+' Damage'),
     ...SEASON.flatMap(l=>[l[1]+' This Week',l[1]+' EWT']),
     ...SETS.map(s=>s[1]+' pieces (of 4)'),
     ...S.shops.map(x=>x.name+' Points')];
   const rows=S.players.map(p=>[p.name,p.bp,p.pp,p.cc,p.rare,p.loot,p.tcTier,p.tcRank,
     ...DAILY.map(([k])=>p.daily[k]?'Done':''),
-    ...LEGION.flatMap(([k])=>p.legion[k]),
+    ...LEGION.map(([k])=>p.legion[k][1]),
     ...SEASON.flatMap(([k])=>{const v=p.season[k][1];return [v,v==null?'':Math.round(v*14*100)/100]}),
     ...SETS.map(([k])=>p.gear[k].filter(Boolean).length),
     ...S.shops.map(x=>p.points[x.id])]);
