@@ -104,7 +104,7 @@ td input.it{width:100%;text-align:left}
 .ewt{color:var(--amber);font-weight:700}
 .rwwrap{overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);margin-bottom:16px}
 .rwb{min-width:68px;padding:4px 8px;border-radius:7px;font-weight:700;border:1px solid var(--line);background:var(--panel2);color:var(--muted)}
-.rwb.on{border-color:var(--amber);background:#2a2a14;color:var(--amber)}
+.rwb.on{border-color:var(--green);background:var(--green-bg);color:#7dffa8}
 .stiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:6px}
 .stile{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--bg);color:var(--tx);border:3px solid var(--bc);border-radius:14px;padding:10px 10px 12px;font-weight:600;min-height:112px;cursor:pointer}
 .stile:hover{border-color:var(--bc);filter:brightness(1.05)}
@@ -155,7 +155,7 @@ td input.icn{width:56px;text-align:center}
 </head>
 <body>
 <header>
-  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v21</small></h1>
+  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v22</small></h1>
   <span class="date" id="dateLbl"></span>
   <span class="sp"></span>
   <button id="btnDay" title="Reset all daily Done buttons to red">🌅 New Day</button>
@@ -315,24 +315,15 @@ function vDaily(){
 function vPlayers(){
   const num=(p,f,extra)=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p[f])}" data-in="${p.id}|${f}" ${extra||''}></td>`;
   let h=`<p class="hint">Type a number and it saves automatically. CC max is 84. PP = Pull Power. Titan BP is overall power (million) with all Titan gear. Use ▲▼ (or type a number in Rank, last column) to reorder players by ranking; every tab follows this order. Drag the bar on the edge of the Player ID header to resize that column.</p>
-  <div class="wrap"><table><thead><tr><th>Player ID</th><th>Titan BP (M)</th><th>Max PP</th><th>CC Level</th><th>Rare Earths Collected</th><th>Total Weekly Loot</th><th>TC Tier</th><th>TC Rank</th><th>Results</th><th>Rank</th><th></th></tr></thead><tbody>`;
+  <div class="wrap"><table><thead><tr><th>Player ID</th><th>Titan BP (M)</th><th>Max PP</th><th>CC Level</th><th>Rare Earths Collected</th><th>Total Weekly Loot</th><th>Rank</th><th></th></tr></thead><tbody>`;
   S.players.forEach((p,i)=>{
     h+=`<tr><td><input type="text" class="name" value="${esc(p.name)}" data-in="${p.id}|name"></td>
     ${num(p,'bp')}${num(p,'pp')}<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" max="84" step="1" value="${val(p.cc)}" data-in="${p.id}|cc"></td>${num(p,'rare')}${num(p,'loot')}
-    <td><select data-in="${p.id}|tcTier"><option value="">—</option>${TIERS.map(t=>`<option ${p.tcTier===t[0]?'selected':''}>${t[0]}</option>`).join('')}</select></td>
-    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="1" max="50" step="1" value="${val(p.tcRank)}" data-in="${p.id}|tcRank" style="width:64px"></td>
-    <td id="res-${p.id}">${resultBadge(p)}</td>
     <td><div class="rank"><button data-mv="${p.id}|-1" title="Move up (better rank)">▲</button><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="1" max="${S.players.length}" step="1" value="${i+1}" data-rank="${p.id}" style="width:56px"><button data-mv="${p.id}|1" title="Move down">▼</button></div></td>
     <td><button class="rm" data-del="${p.id}" title="Remove player">🗑</button></td></tr>`;
   });
-  h+=`</tbody></table></div><p><button class="btn-accent" id="addP">＋ Add player</button></p>`;
-  const rt=TIERS.filter(t=>t[3]);
-  h+=`<h3 style="margin:14px 0 4px">🎁 Tier rewards already received</h3><p class="hint" style="display:block">A tier reward is paid <b>one time only</b>. If a player is demoted and later advances over the same tier again, no reward is paid. Mark a reward here once a player has received it (“New Week” also marks it automatically for players whose result is Advance).</p>
-  <div class="rwwrap"><table><thead><tr><th>Player ID</th>${rt.map(t=>`<th>${t[2].replace(' to ',' → ')}</th>`).join('')}</tr></thead><tbody>`;
-  S.players.forEach(p=>{h+=`<tr><td>${esc(p.name)}</td>${rt.map(t=>`<td><button class="rwb ${p.rewards[t[0]]?'on':''}" data-rw="${p.id}|${t[0]}" title="${t[2]}: ${t[3].toLocaleString()} pts">${p.rewards[t[0]]?'🎁 Got':'—'}</button></td>`).join('')}</tr>`});
-  return h+'</tbody></table></div>';
+  return h+`</tbody></table></div><p><button class="btn-accent" id="addP">＋ Add player</button></p>`;
 }
-const ewt=v=>(v==null||v==='')?'':fmt(v*14);
 function vLegion(){
   let h=`<p class="hint">Legion Hunt: the 7 bosses are hit <b>daily</b> and the rewards (Technology Points) are paid daily. Type the damage in each boss column. “New Week” (top bar) clears the damage.</p>
   <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${LEGION.map((l,i)=>`<th style="background:${LEG_COL[i%LEG_COL.length]};color:#10131a">${l[1]}</th>`).join('')}</tr>
@@ -342,11 +333,17 @@ function vLegion(){
   });
   return h+'</tbody></table></div>';
 }
+const RW_COL={Bronze:'#e2a878',Silver:'#d1d5db',Gold:'#fcd34d',Platinum:'#99f6e4',Diamond:'#7dd3fc',Master:'#f0abfc'};
 function vSeason(){
-  let h=`<p class="hint">Titan Challenge: the 3-month season bosses (Atlas, Kraken, Arachne) are counted <b>weekly</b>; rewards are paid out Monday by tier and rank. Type this week's damage. <b>EWT</b> (Expected Weekly Total) = damage × 14.</p>
-  <div class="wrap"><table><thead><tr><th rowspan="2">Player</th>${SEASON.map(l=>`<th colspan="2">${l[1]}</th>`).join('')}</tr><tr>${SEASON.map(()=>'<th>This Week</th><th>EWT</th>').join('')}</tr></thead><tbody>`;
+  const rt=TIERS.filter(t=>t[3]);
+  let h=`<p class="hint">Titan Challenge (weekly). Enter each player's <b>TC Rank</b> and <b>TC Tier</b>; the Results column shows Advance / Unchanged / Demotion. Tap a tier-reward button once that reward has been received: it turns green with a 🎁. A tier reward is paid <b>one time only</b>, so if a player is demoted and later advances over the same tier again, no reward is paid. (“New Week” also marks the reward automatically for players whose result is Advance.)</p>
+  <div class="wrap"><table><thead><tr><th>Player</th><th>TC Rank</th><th>TC Tier</th><th>Results</th>${rt.map(t=>`<th style="background:${RW_COL[t[0]]};color:#10131a">${t[2].replace(' to ',' → ')}<br><small>${t[3].toLocaleString()} pts</small></th>`).join('')}</tr></thead><tbody>`;
   S.players.forEach((p,i)=>{
-    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>${SEASON.map(([k])=>`<td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="0" step="any" value="${val(p.season[k][1])}" data-in="${p.id}|season|${k}|1"></td><td class="cnt ewt" id="ew-${p.id}-${k}">${ewt(p.season[k][1])}</td>`).join('')}</tr>`;
+    h+=`<tr><td><span class="rk">#${i+1}</span> ${esc(p.name)}</td>
+    <td><input type="text" inputmode="decimal" enterkeyhint="enter" data-num="1" min="1" max="50" step="1" value="${val(p.tcRank)}" data-in="${p.id}|tcRank" style="width:64px"></td>
+    <td><select data-in="${p.id}|tcTier"><option value="">—</option>${TIERS.map(t=>`<option ${p.tcTier===t[0]?'selected':''}>${t[0]}</option>`).join('')}</select></td>
+    <td id="res-${p.id}">${resultBadge(p)}</td>
+    ${rt.map(t=>`<td style="background:${RW_COL[t[0]]}"><button class="rwb ${p.rewards[t[0]]?'on':''}" data-rw="${p.id}|${t[0]}" title="${t[2]}">${p.rewards[t[0]]?'🎁 ':''}${t[3].toLocaleString()}</button></td>`).join('')}</tr>`;
   });
   return h+'</tbody></table></div>';
 }
@@ -636,7 +633,6 @@ document.addEventListener('input',e=>{
     o[k]=v;
   }else o[k]=el.value;
   if(path[0]==='points'&&shopView==='can')refreshCan();
-  if(path[0]==='season'){const c=document.getElementById('ew-'+p.id+'-'+path[1]);if(c)c.textContent=ewt(o[k])}
   if(path[0]==='tcTier'||path[0]==='tcRank'){const c=document.getElementById('res-'+p.id);if(c)c.innerHTML=resultBadge(p)}
   save();
 });
@@ -708,17 +704,15 @@ function newDay(){
   S.date=todayStr();save();render();
 }
 function newSeason(){
-  if(!confirm('Start a new season?\n\n• Every player goes back to Bronze (TC Tier = Bronze, TC Rank cleared)\n• “Tier rewards already received” is cleared, so rewards can be earned again\n\nThis cannot be undone. Take a 💾 Backup first if unsure.'))return;
-  const clearBoss=confirm('Also clear Titan Challenge damage (Atlas, Kraken, Arachne) for the new season?\n\nOK = clear it\nCancel = keep it');
-  S.players.forEach(p=>{p.tcTier='Bronze';p.tcRank=null;p.rewards={};if(clearBoss)SEASON.forEach(([k])=>p.season[k]=[null,null])});
+  if(!confirm('Start a new season?\n\n• Every player goes back to Bronze (TC Tier = Bronze, TC Rank cleared)\n• All tier-reward buttons are cleared, so rewards can be earned again\n\nThis cannot be undone. Take a 💾 Backup first if unsure.'))return;
+  S.players.forEach(p=>{p.tcTier='Bronze';p.tcRank=null;p.rewards={}});
   save();render();
 }
 function newWeek(){
-  if(!confirm('Start a new week?\n\n• Legion Hunt: damage cleared\n• Titan Challenge: this week damage cleared (EWT resets)\n• Weekly Total Loot is cleared\n• Players whose TC result is Advance are recorded as having received that tier reward (one time only)\n\nTip: take a 💾 Backup first if unsure.'))return;
+  if(!confirm('Start a new week?\n\n• Legion Hunt: damage cleared\n• Weekly Total Loot is cleared\n• Players whose TC result is Advance are recorded as having received that tier reward (one time only)\n\nTip: take a 💾 Backup first if unsure.'))return;
   S.players.forEach((p,i)=>{
     const tr=tierOutcome(p.tcTier,p.tcRank);if(tr&&tr.out==='Advance'&&tr.pts)p.rewards[p.tcTier]=true;
     LEGION.forEach(([k])=>{const a=p.legion[k];if(a[1]!=null)a[0]=a[1];a[1]=null});
-    SEASON.forEach(([k])=>{const a=p.season[k];if(a[1]!=null)a[0]=a[1];a[1]=null});
     p.loot=null;
   });
   save();render();
@@ -730,13 +724,13 @@ function exportCsv(){
   const head=['Player','Titan BP (M)','Max PP','CC Level','Rare Earths','Total Weekly Loot','TC Tier','TC Rank',
     ...DAILY.map(d=>d[1]),
     ...LEGION.map(l=>l[1]+' Damage'),
-    ...SEASON.flatMap(l=>[l[1]+' This Week',l[1]+' EWT']),
+    ...TIERS.filter(t=>t[3]).map(t=>t[2]+' reward received'),
     ...SETS.map(s=>s[1]+' pieces (of 4)'),
     ...S.shops.map(x=>x.name+' Points')];
   const rows=S.players.map(p=>[p.name,p.bp,p.pp,p.cc,p.rare,p.loot,p.tcTier,p.tcRank,
     ...DAILY.map(([k])=>p.daily[k]?'Done':''),
     ...LEGION.map(([k])=>p.legion[k][1]),
-    ...SEASON.flatMap(([k])=>{const v=p.season[k][1];return [v,v==null?'':Math.round(v*14*100)/100]}),
+    ...TIERS.filter(t=>t[3]).map(t=>p.rewards[t[0]]?'Yes':''),
     ...SETS.map(([k])=>p.gear[k].filter(Boolean).length),
     ...S.shops.map(x=>p.points[x.id])]);
   dl('Legion_Report_'+todayStr()+'.csv','text/csv;charset=utf-8','﻿'+[head,...rows].map(r=>r.map(q).join(',')).join('\r\n'));
