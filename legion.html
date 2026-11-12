@@ -57,6 +57,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4}
 .pills{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
 .pills button.on{background:#1d3b66;border-color:var(--accent)}
 .pills.shops button.on{background:#12381f;border-color:var(--green)}
+.pills.lgs button.on{background:#4a1d3a;border-color:#f472b6}
 td.wc{white-space:normal;text-align:left;min-width:230px}
 .ib{display:inline-block;background:var(--green-bg);border:1px solid var(--green);color:#7dffa8;border-radius:99px;padding:2px 9px;margin:2px;font-size:12.5px}
 .ib.next{background:#2a2a14;border-color:#6b5316;color:var(--amber)}
@@ -139,6 +140,23 @@ button.buy{background:#12381f;border-color:var(--green);color:#9dffc0;font-weigh
 .stile.sm .sub{font-size:10px}
 .stile.sm.sel{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--bc)}
 td input.icn{width:56px;text-align:center}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;margin-bottom:14px}
+.pgrid .stile.sm{width:auto;min-width:0}
+.tgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:14px}
+.tgrid .stile.sm{width:auto;min-width:0;min-height:84px;padding:5px 4px}
+.lkgrid{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}.lkgrid .chip{font-size:17px;padding:4px 12px}.lkgrid .lkp{font-size:15px;font-weight:800;border:3px solid var(--bc);background:var(--bg);color:var(--tx);border-radius:12px;padding:8px 14px}
+.lkbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}.lkbar label{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--muted,#9aa4b2)}.lkbar select{width:auto;min-width:150px;text-align:left;font-size:15px;padding:8px}
+.tgrid .stile .sub{font-size:12px;line-height:1.2;overflow-wrap:anywhere;font-weight:700}
+.ptile .trow{justify-content:space-between;align-items:center}
+.pcount{font-size:19px;font-weight:900;line-height:1}
+.ptile .ttl{font-size:13px;overflow-wrap:anywhere}
+.ptile .chips{display:flex;flex-wrap:wrap;gap:2px;margin-top:auto}
+.chip{background:var(--bc);color:#fff;border-radius:6px;padding:2px 7px;font-size:14px;font-weight:800}
+.ptile .chips{gap:4px}
+.chip.hit{background:#16a34a}
+.tchips{display:flex;gap:6px;flex-wrap:wrap}
+.tchip{padding:4px 12px;font-size:15px;font-weight:800;border-radius:9px;border:2px solid var(--line);background:var(--panel2)}
+.tchip.hit{border-color:var(--green);background:var(--green-bg);color:#7dffa8}
 @media (max-width:700px){.cards{grid-template-columns:1fr}}
 @media (max-width:700px),(max-height:620px){
   header{padding:6px 10px;gap:6px;flex-wrap:nowrap;overflow-x:auto}
@@ -155,7 +173,7 @@ td input.icn{width:56px;text-align:center}
 </head>
 <body>
 <header>
-  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v22</small></h1>
+  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v25</small></h1>
   <span class="date" id="dateLbl"></span>
   <span class="sp"></span>
   <button id="btnDay" title="Reset all daily Done buttons to red">🌅 New Day</button>
@@ -206,6 +224,13 @@ function migrate(){
   if(!S.shops)S.shops=[];
   if(S.focus==null)S.focus='';
   if(S.focusMonth==null)S.focusMonth='';
+  if(!S.targets)S.targets={assign:{},hit:{}};
+  if(!S.targets.legions){
+    const old=S.targets;
+    S.targets={cur:'',legions:[{id:uid(),name:'Legion 1',players:S.players.map(p=>({id:p.id,name:p.name})),assign:old.assign||{},hit:old.hit||{}}]};
+    S.targets.cur=S.targets.legions[0].id;
+  }
+  if(!S.targets.legions.some(l=>l.id===S.targets.cur))S.targets.cur=S.targets.legions[0].id;
   defaultShops().forEach(d=>{if(!S.shops.some(x=>x.id===d.id))S.shops.push(d)});
   S.players.forEach(p=>{
     if(!p.points)p.points={};
@@ -268,7 +293,7 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const val=v=>v==null?'':v;
 
 /* ============ TABS ============ */
-const TABS=[['daily','✅ Daily Tasks','#22c55e'],['players','👤 Players & Power','#4f9cff'],['legion','🐉 Legion Hunt','#a78bfa'],['season','🌋 Titan Challenge','#fb923c'],['shops','🛒 Shops & Resources','#2dd4bf']];
+const TABS=[['daily','✅ Daily Tasks','#22c55e'],['players','👤 Players & Power','#4f9cff'],['legion','🐉 Legion Hunt','#a78bfa'],['season','🌋 Titan Challenge','#fb923c'],['targets','🎯 Legion Targets','#f472b6'],['shops','🛒 Shops & Resources','#2dd4bf']];
 let tab=(()=>{try{return localStorage.getItem(KEY+'_tab')||'daily'}catch(e){return 'daily'}})();
 if(!TABS.some(t=>t[0]===tab))tab='daily';
 
@@ -281,7 +306,7 @@ function render(){
   const v=document.getElementById('view');
   const oldW=v.querySelector('.wrap'),sx=oldW?oldW.scrollLeft:0,sy=oldW?oldW.scrollTop:0,mt=v.scrollTop,sameTab=v.dataset.shown===tab;
   const banner=S.date!==todayStr()?`<div class="banner">📆 The day has changed since your last session (${S.date}). <button class="btn-accent" id="bnDay">Start new day (reset Done buttons)</button> <button id="bnKeep">Keep as is</button></div>`:'';
-  v.innerHTML=banner+({daily:vDaily,players:vPlayers,legion:vLegion,season:vSeason,gear:vGear,shops:vShops,tier:vTier}[tab])();
+  v.innerHTML=banner+({daily:vDaily,players:vPlayers,legion:vLegion,season:vSeason,targets:vTargets,gear:vGear,shops:vShops,tier:vTier}[tab])();
   v.dataset.shown=tab;
   setTabOrder();
   document.querySelectorAll('#view .wrap thead tr:first-child th:first-child').forEach(th=>{const d=document.createElement('span');d.className='rsz';d.title='Drag to resize';th.appendChild(d)});
@@ -346,6 +371,59 @@ function vSeason(){
     ${rt.map(t=>`<td style="background:${RW_COL[t[0]]}"><button class="rwb ${p.rewards[t[0]]?'on':''}" data-rw="${p.id}|${t[0]}" title="${t[2]}">${p.rewards[t[0]]?'🎁 ':''}${t[3].toLocaleString()}</button></td>`).join('')}</tr>`;
   });
   return h+'</tbody></table></div>';
+}
+/* ===== Legion Targets: pick a player tile, then tap enemy target tiles ===== */
+const TG_ROWS=[['A','#ffe0e6','#e0506e','#52082a'],['B','#fff1d6','#e8890c','#4a2b00'],['C','#d9f4ec','#10a37f','#04382b'],['D','#dbeaff','#2f7fe8','#0a2850']];
+const TG_COLS=5;
+const PCOL=[['#fff1d6','#e8890c','#4a2b00'],['#ece3ff','#7c3aed','#26104f'],['#d9f4ec','#10a37f','#04382b'],['#dbeaff','#2f7fe8','#0a2850'],['#ffdfe9','#e0447a','#52082a'],['#fff9c4','#d4b106','#3d3300'],['#e0f7fa','#00acc1','#00363d'],['#f3e5f5','#ab47bc','#35103b']];
+let tgSel='',lkP='',lkT='';
+const curL=()=>{const T=S.targets;return T.legions.find(l=>l.id===T.cur)||T.legions[0]};
+const LP=id=>curL().players.find(p=>p.id===id);
+const tgList=id=>(curL().assign[id]||[]);
+function vTargets(){
+  const T=S.targets,L=curL();
+  if(tgSel&&!LP(tgSel))tgSel='';
+  const sp=tgSel?LP(tgSel):null;
+  const who={};
+  L.players.forEach(p=>tgList(p.id).forEach(c=>(who[c]=who[c]||[]).push(p)));
+  let h=`<div class="pills lgs">${T.legions.map(l=>`<button data-lgsel="${l.id}" class="${l.id===L.id?'on':''}">${esc(l.name)}</button>`).join('')}<button class="btn-accent" data-lgadd="1">＋ Legion</button></div>
+  <div class="pills"><button data-lgren="1">✏ Rename legion</button>${T.legions.length>1?'<button class="btn-danger" data-lgdel="1">🗑 Delete legion</button>':''}</div>`;
+  h+='<div class="buybar">';
+  if(sp){
+    const list=tgList(sp.id);
+    h+=`<div class="bbmain" style="--bc:#f472b6"><div><b>${esc(sp.name)}</b> <span class="cnt">· ${list.length} target${list.length===1?'':'s'}</span></div>
+    <div class="tchips">${list.length?list.map(c=>{const hit=L.hit[sp.id+'|'+c];return `<button class="tchip${hit?' hit':''}" data-thit="${c}">${hit?'✓ ':''}${c}</button>`}).join(''):'<span class="cnt">none yet</span>'}</div>
+    <div class="bbbtns"><button data-tclr="1">Clear</button><button data-tnone="1">✕</button></div></div>
+    <div class="cnt" style="margin-top:6px">Tap targets below to add/remove. Tap a chip to tick it as hit.</div>
+    <div class="pills" style="margin-top:6px"><button data-pren="1">✏ Rename ${esc(sp.name)}</button><button class="btn-danger" data-pdel="1">🗑 Remove ${esc(sp.name)}</button></div>`;
+  }else h+='<span class="cnt">👆 Tap a player tile to select him, then tap target tiles to assign. Tap a player tile later to see his targets under it and tick them off.</span>';
+  h+='</div>';
+  h+=`<div class="card"><h3>${esc(L.name)} players <span class="cnt">tap to select</span></h3><div class="pills"><button class="btn-accent" data-padd="1">＋ Add player</button><button data-pimp="1">⬇ Add from tracker players</button></div><div class="pgrid">`;
+  if(!L.players.length)h+='<span class="cnt">No players yet — tap “＋ Add player” and type a name.</span>';
+  L.players.forEach((p,i)=>{
+    const [bg,bc,tx]=PCOL[i%PCOL.length],list=tgList(p.id),on=p.id===tgSel;
+    h+=`<button class="stile sm ptile${on?' sel':''}" data-ptile="${p.id}" style="--bg:${bg};--bc:${bc};--tx:${tx}"><span class="trow"><span class="cbx">${on?'✓':''}</span><span class="pcount">${list.length||'—'}</span></span><span class="ttl">${esc(p.name)}</span><span class="chips">${list.map(c=>`<span class="chip${L.hit[p.id+'|'+c]?' hit':''}">${c}</span>`).join('')}</span></button>`;
+  });
+  h+='</div></div><div class="card"><h3>Targets <span class="cnt">enemy formation</span></h3><div class="tgrid">';
+  TG_ROWS.forEach(([r,bg,bc,tx])=>{
+    for(let n=1;n<=TG_COLS;n++){
+      const c=r+n,mine=sp&&tgList(sp.id).includes(c),ws=who[c]||[];
+      const names=ws.slice(0,3).map(p=>esc(p.name.slice(0,6))).join(' ')+(ws.length>3?' +'+(ws.length-3):'');
+      h+=`<button class="stile sm tt${mine?' sel':''}" data-tgt="${c}" style="--bg:${bg};--bc:${bc};--tx:${tx}"><span class="trow"><span class="cbx">${mine?'✓':''}</span><span class="ttl" style="font-size:15px">${c}</span></span><span class="sub">${names}</span></button>`;
+    }
+  });
+  h+='</div></div>';
+  if(lkP&&!LP(lkP))lkP='';
+  const allT=[];TG_ROWS.forEach(([r])=>{for(let n=1;n<=TG_COLS;n++)allT.push(r+n)});
+  h+=`<div class="card"><h3>🔎 Look up <span class="cnt">pick a player or a target</span></h3><div class="lkbar">
+   <label>Player<select id="lkP"><option value="">— choose player —</option>${L.players.map(p=>`<option value="${p.id}"${p.id===lkP?' selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
+   <label>Target<select id="lkT"><option value="">— choose target —</option>${allT.map(c=>`<option value="${c}"${c===lkT?' selected':''}>${c}</option>`).join('')}</select></label></div>`;
+  if(lkP){const lp=LP(lkP),ix=L.players.indexOf(lp),[bg,bc,tx]=PCOL[ix%PCOL.length],list=tgList(lkP);
+    h+=`<div style="--bg:${bg};--bc:${bc};--tx:${tx}"><b>${esc(lp.name)}</b> <span class="cnt">· ${list.length} target${list.length===1?'':'s'}</span><div class="lkgrid">${list.length?list.map(c=>`<span class="chip${L.hit[lkP+'|'+c]?' hit':''}">${L.hit[lkP+'|'+c]?'✓ ':''}${c}</span>`).join(''):'<span class="cnt">no targets assigned</span>'}</div></div>`;}
+  if(lkT){const ws=who[lkT]||[];
+    h+=`<div><b>${lkT}</b> <span class="cnt">· ${ws.length} player${ws.length===1?'':'s'} can hit</span><div class="lkgrid">${ws.length?ws.map(p=>{const [bg,bc,tx]=PCOL[L.players.indexOf(p)%PCOL.length];return `<span class="lkp" style="--bg:${bg};--bc:${bc};--tx:${tx}">${esc(p.name)}${L.hit[p.id+'|'+lkT]?' ✓':''}</span>`}).join(''):'<span class="cnt">nobody assigned</span>'}</div></div>`;}
+  h+='</div><div class="pills"><button data-tclrhits="1">Clear hit ticks</button><button class="btn-danger" data-tclrall="1">Clear all targets</button></div>';
+  return h;
 }
 function vGear(){
   let h=`<p class="hint">Mark each Titan gear piece you own. A set with all 4 pieces lights up as full. Overall power itself is entered in “Players & Power”.</p><div class="cards">`;
@@ -579,6 +657,25 @@ document.addEventListener('click',e=>{
   if(t.dataset.mv){const [id,d]=t.dataset.mv.split('|');movePlayer(id,S.players.indexOf(P(id))+ +d);return}
   if(t.dataset.allg){const [id,gi]=t.dataset.allg.split('|');const p=P(id),keys=DAILY_GROUPS[+gi].cols.map(c=>c[0]);const allOn=keys.every(k=>p.daily[k]);keys.forEach(k=>p.daily[k]=!allOn);save();render();return}
   if(t.dataset.rw){const [id,tier]=t.dataset.rw.split('|');const p=P(id);p.rewards[tier]=!p.rewards[tier];save();render();return}
+  if(t.dataset.lgsel){S.targets.cur=t.dataset.lgsel;tgSel='';save();render();return}
+  if(t.dataset.lgadd){const n=prompt('Name of the legion:','Legion '+(S.targets.legions.length+1));if(n&&n.trim()){const l={id:uid(),name:n.trim(),players:[],assign:{},hit:{}};S.targets.legions.push(l);S.targets.cur=l.id;tgSel='';save();render()}return}
+  if(t.dataset.lgren){const L=curL(),n=prompt('Rename legion:',L.name);if(n&&n.trim()){L.name=n.trim();save();render()}return}
+  if(t.dataset.lgdel){const L=curL();if(S.targets.legions.length>1&&confirm('Delete '+L.name+' with its players and targets?')){S.targets.legions=S.targets.legions.filter(x=>x.id!==L.id);S.targets.cur=S.targets.legions[0].id;tgSel='';save();render()}return}
+  if(t.dataset.padd){const n=prompt('Player name:');if(n&&n.trim()){const p={id:uid(),name:n.trim()};curL().players.push(p);tgSel=p.id;save();render()}return}
+  if(t.dataset.pimp){const L=curL();let k=0;S.players.forEach(p=>{if(!L.players.some(x=>x.name.toLowerCase()===p.name.toLowerCase())){L.players.push({id:uid(),name:p.name});k++}});toast(k?k+' player'+(k===1?'':'s')+' added':'Nothing new to add');save();render();return}
+  if(t.dataset.pren){const p=LP(tgSel);if(p){const n=prompt('Rename player:',p.name);if(n&&n.trim()){p.name=n.trim();save();render()}}return}
+  if(t.dataset.pdel){const L=curL(),p=LP(tgSel);if(p&&confirm('Remove '+p.name+' and his targets?')){tgList(p.id).forEach(c=>delete L.hit[p.id+'|'+c]);delete L.assign[p.id];L.players=L.players.filter(x=>x.id!==p.id);tgSel='';save();render()}return}
+  if(t.dataset.ptile){const id=t.dataset.ptile;tgSel=tgSel===id?'':id;render();return}
+  if(t.dataset.tnone){tgSel='';render();return}
+  if(t.dataset.tgt){
+    if(!tgSel||!LP(tgSel)){toast('Select a player first');return}
+    const L=curL(),a=L.assign[tgSel]||(L.assign[tgSel]=[]),c=t.dataset.tgt,i=a.indexOf(c);
+    if(i>=0){a.splice(i,1);delete L.hit[tgSel+'|'+c]}else{a.push(c);a.sort()}
+    save();render();return}
+  if(t.dataset.thit){const L=curL(),k=tgSel+'|'+t.dataset.thit;if(L.hit[k])delete L.hit[k];else L.hit[k]=true;save();render();return}
+  if(t.dataset.tclr){const L=curL();tgList(tgSel).forEach(c=>delete L.hit[tgSel+'|'+c]);L.assign[tgSel]=[];save();render();return}
+  if(t.dataset.tclrhits){if(confirm('Clear all hit ticks? The assigned targets stay.')){curL().hit={};save();render()}return}
+  if(t.dataset.tclrall){if(confirm('Remove ALL assigned targets for every player in '+curL().name+'?')){const L=curL();L.assign={};L.hit={};save();render()}return}
   if(t.dataset.tile){const k=t.dataset.tile;sel=sel===k?'':k;selPk=1;refreshCan();return}
   if(t.dataset.selpk){selPk+=+t.dataset.selpk;refreshCan();return}
   if(t.dataset.cancelsel){sel='';refreshCan();return}
@@ -668,6 +765,8 @@ document.addEventListener('change',e=>{
   movePlayer(id,n-1);
 });
 document.addEventListener('change',e=>{
+  if(e.target.id==='lkP'){lkP=e.target.value;render();return}
+  if(e.target.id==='lkT'){lkT=e.target.value;render();return}
   if(e.target.id==='canPlayer'){canPid=e.target.value;sel='';selPk=1;render();return}
   if(e.target.id==='focusSel'){
     const p=P(canPid);if(!p)return;if(!p.focus)p.focus={item:'',qty:1};
