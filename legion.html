@@ -646,21 +646,31 @@ const UPG={
  R:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gAdv',200],['gExp',100],['gExp',125],['gExp',150]]
 };
 const RESN={badges:'Pilot Badges',gold:'Golden Pieces',purple:'Purple Pieces',blue:'Blue Pieces',shards:'Pilot Shards',gBasic:'Basic Guides',gStd:'Standard Guides',gAdv:'Advanced Guides',gExp:'Expert Guides'};
-let pmsShowAll=false,pmsPid='',pmsFil='ALL',pmsSort='evo',pmsQ='';
+let pmsSkill='',pmsShowAll=false,pmsPid='',pmsFil='ALL',pmsSort='evo',pmsQ='';
 const nz=v=>(+v||0);
 function getPms(pid){
   let m=S.pms[pid];
   if(!m){
     m=S.pms[pid]={inv:{badges:0,gold:0,purple:0,blue:0,gBasic:0,gStd:0,gAdv:0,gExp:0},focus:'',p:{}};
     const pl=P(pid);
-    if(pl&&/maverick/i.test(pl.name))PILOTS.forEach(a=>{m.p[a[0]]={s:a[4],st:a[5],up:a[6]}});
+    if(pl&&/maverick/i.test(pl.name)){seedMaverick(m);m._seeded=true}
   }
   if(!m.inv)m.inv={};
   Object.keys({badges:1,gold:1,purple:1,blue:1,gBasic:1,gStd:1,gAdv:1,gExp:1}).forEach(k=>{if(m.inv[k]==null)m.inv[k]=0});
   [['selSR','gold'],['selR','purple'],['selN','blue']].forEach(([o,n])=>{if(m.inv[o]!=null){m.inv[n]=Math.max(nz(m.inv[n]),nz(m.inv[o]));delete m.inv[o]}});
   if(m.focus==null)m.focus='';
   if(!m.p)m.p={};
+  if(!m._seeded){m._seeded=true;const pl=P(pid);
+    if(pl&&/^\s*maverick\s*$/i.test(pl.name)&&PILOTS.reduce((t,a)=>{const x=m.p[a[0]]||{};return t+nz(x.s)+nz(x.st)+nz(x.up)},0)===0)seedMaverick(m)}
   return m;
+}
+function seedMaverick(m){PILOTS.forEach(a=>{m.p[a[0]]={s:a[4],st:a[5],up:a[6]}})}
+function restoreMaverick(){
+  const m=getPms(pmsPid);
+  if(!confirm('Restore the original Maverick pilot data (shards, stars, upgrade levels for all pilots) for this player? Current pilot shards/stars/levels will be overwritten. Empty inventory boxes will be filled with the counts from your Skuld screenshot (946 badges, 665 golden, 800 purple, 113 blue).'))return;
+  seedMaverick(m);
+  [['badges',946],['gold',665],['purple',800],['blue',113]].forEach(([k,v])=>{if(!nz(m.inv[k]))m.inv[k]=v});
+  m._seeded=true;save();render();
 }
 function pst(m,a){return m.p[a[0]]||(m.p[a[0]]={s:0,st:0,up:0})}
 function evoNeed(a,st){ // returns [[res,need]] or null (maxed / no data)
@@ -743,7 +753,7 @@ function vPms(){
   const p=P(pmsPid);if(!p)return '<div class="calc">Add a player first.</div>';
   const m=getPms(pmsPid),I=(k,l)=>`<div class="irow"><span>${l}</span><input data-pms="inv|${k}" data-num="1" type="text" inputmode="decimal" value="${val(m.inv[k]||'')}" placeholder="0"></div>`;
   let h=`<div class="calc"><b>Player:</b> <select id="pmsPlayer" style="min-width:170px">${S.players.map((q,i)=>`<option value="${q.id}" ${q.id===pmsPid?'selected':''}>#${i+1} ${esc(q.name)}</option>`).join('')}</select>
-   <span style="color:var(--muted);font-size:12.5px">Pilot shards & inventory below belong to this player only.</span></div>
+   <span style="color:var(--muted);font-size:12.5px">Pilot shards & inventory below belong to this player only.</span> <button data-pmsrestore="1" title="Re-load the original Maverick pilot data">↺ Restore Maverick data</button></div>
    <div id="pmsFocusWrap">${pmsFocusBox(m)}</div>
    <div class="pms-inv">
     <div class="icard" style="--bc:#facc15"><h4>🎖 Pilot Badges</h4>${I('badges','Badges')}</div>
@@ -751,8 +761,15 @@ function vPms(){
     <div class="icard" style="--bc:#4ade80"><h4>📘 Training Guides</h4>${GUIDE.map(g=>I(g[0],g[1])).join('')}</div>
    </div>
    <div id="pmsTopBox">${pmsTop(m)}</div>`;
+  const skills=[...new Set(PILOTS.map(a=>a[3]))].sort(),cnt={};
+  PILOTS.forEach(a=>{cnt[a[3]]=(cnt[a[3]]||0)+1});
+  h+=`<div class="calc"><b>✨ Passive skill:</b> <select id="pmsSkillSel" style="min-width:240px;max-width:100%;width:auto"><option value="">— choose a passive skill —</option>${skills.map(k=>`<option value="${esc(k)}" ${k===pmsSkill?'selected':''}>${esc(k)} (${cnt[k]})</option>`).join('')}</select></div>`;
+  if(pmsSkill){
+    const rr=pmsRows(m).filter(r=>r.a[3]===pmsSkill).sort((x,y)=>((y.upg?y.upg.pct+(y.upg.ok?1:0):-1)-(x.upg?x.upg.pct+(x.upg.ok?1:0):-1)));
+    h+=`<p class="hint" style="display:block">Pilots with <b>${esc(pmsSkill)}</b> (nearest upgrade first). Tap a pilot to open him in Focus Pilot.</p><div class="pgrid2">${rr.map(r=>pcardHtml(m,r)).join('')}</div>`;
+  }
   if(!pmsShowAll)return h+'<p><button data-pmsall="1">📋 Show all pilots</button> <small style="color:var(--muted)">All other pilots stay hidden; only the 5 closest to evolve / upgrade are shown above.</small></p>';
-  h+='<p><button data-pmsall="1">🙈 Hide all pilots</button></p>';
+  h+='<p><button data-pmsall="1">🙈 Hide all pilots</button></p><div id="pmsAll">';
   const fl=['ALL','SSR','SR','R','N'];
   h+=`<div class="calc"><span class="pills">${fl.map(f=>`<button data-pmsfil="${f}" class="${f===pmsFil?'on':''}">${f==='ALL'?'All 86':f}</button>`).join('')}</span>
    <select id="pmsSort"><option value="evo" ${pmsSort==='evo'?'selected':''}>Sort: nearest evolve</option><option value="upg" ${pmsSort==='upg'?'selected':''}>Sort: nearest upgrade</option><option value="name" ${pmsSort==='name'?'selected':''}>Sort: name</option><option value="sh" ${pmsSort==='sh'?'selected':''}>Sort: most shards</option></select>
@@ -760,14 +777,17 @@ function vPms(){
   let rows=pmsRows(m).filter(r=>pmsFil==='ALL'||r.a[1]===pmsFil);
   const sc=r=>pmsSort==='evo'?(r.evo?r.evo.pct+(r.evo.ok?1:0):-1):pmsSort==='upg'?(r.upg?r.upg.pct+(r.upg.ok?1:0):-1):pmsSort==='sh'?nz(r.s.s):0;
   if(pmsSort==='name')rows.sort((x,y)=>x.a[0].localeCompare(y.a[0]));else rows.sort((x,y)=>sc(y)-sc(x));
-  h+=`<div class="pgrid2">`+rows.map(r=>{const a=r.a,s=r.s;
-   return `<div class="pcard r-${a[1]} ${a[0]===m.focus?'sel':''}" data-nm="${esc(a[0].toLowerCase())}" data-key="${esc(a[0])}"><button class="pname" data-pmssel="${esc(a[0])}">${esc(a[0])}<span class="rar">${a[1]}</span> <span style="float:right;font-weight:600;font-size:11px">${esc(a[2])}</span></button>
-    <small>${esc(a[3])}</small><small>${starTxt(s.st)} · Lv ${s.up}/10</small>
-    <div class="pshr">Shards <input data-pms="sh|${esc(a[0])}" data-num="1" type="text" inputmode="decimal" value="${val(s.s||'')}" placeholder="0"></div>
-    <div class="pbars">${cardBars(m,a,s)}</div></div>`}).join('')+`</div>`;
+  h+=`<div class="pgrid2">`+rows.map(r=>pcardHtml(m,r)).join('')+`</div></div>`;
   return h;
 }
-function pmsApplyQ(){const q=pmsQ.trim().toLowerCase();document.querySelectorAll('.pcard').forEach(c=>{c.style.display=!q||c.dataset.nm.includes(q)?'':'none'})}
+function pcardHtml(m,r){
+  const a=r.a,s=r.s;
+  return `<div class="pcard r-${a[1]} ${a[0]===m.focus?'sel':''}" data-nm="${esc(a[0].toLowerCase())}" data-key="${esc(a[0])}"><button class="pname" data-pmssel="${esc(a[0])}">${esc(a[0])}<span class="rar">${a[1]}</span> <span style="float:right;font-weight:600;font-size:11px">${esc(a[2])}</span></button>
+    <small>${esc(a[3])}</small><small>${starTxt(s.st)} · Lv ${s.up}/10</small>
+    <div class="pshr">Shards <input data-pms="sh|${esc(a[0])}" data-num="1" type="text" inputmode="decimal" value="${val(s.s||'')}" placeholder="0"></div>
+    <div class="pbars">${cardBars(m,a,s)}</div></div>`;
+}
+function pmsApplyQ(){const q=pmsQ.trim().toLowerCase();document.querySelectorAll('#pmsAll .pcard').forEach(c=>{c.style.display=!q||c.dataset.nm.includes(q)?'':'none'})}
 function pmsRefresh(){
   const m=getPms(pmsPid),t=document.getElementById('pmsTopBox'),l=document.getElementById('fLive');
   if(t)t.innerHTML=pmsTop(m);if(l)l.innerHTML=pmsFocusLive(m);
@@ -818,6 +838,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.mv){const [id,d]=t.dataset.mv.split('|');movePlayer(id,S.players.indexOf(P(id))+ +d);return}
   if(t.dataset.allg){const [id,gi]=t.dataset.allg.split('|');const p=P(id),keys=DAILY_GROUPS[+gi].cols.map(c=>c[0]);const allOn=keys.every(k=>p.daily[k]);keys.forEach(k=>p.daily[k]=!allOn);save();render();return}
   if(t.dataset.pmssel){getPms(pmsPid).focus=t.dataset.pmssel;save();render();const d=document.getElementById('pmsFocus');if(d)d.scrollIntoView({block:'start'});return}
+  if(t.dataset.pmsrestore){restoreMaverick();return}
   if(t.dataset.pmsall){pmsShowAll=!pmsShowAll;render();return}
   if(t.dataset.pmsclose){getPms(pmsPid).focus='';save();render();return}
   if(t.dataset.pmsfil){pmsFil=t.dataset.pmsfil;render();return}
@@ -937,6 +958,7 @@ document.addEventListener('change',e=>{
 document.addEventListener('change',e=>{
   const el=e.target;
   if(el.id==='pmsPlayer'){pmsPid=el.value;render();return}
+  if(el.id==='pmsSkillSel'){pmsSkill=el.value;render();return}
   if(el.id==='pmsFocusSel'){getPms(pmsPid).focus=el.value;save();render();return}
   if(el.id==='pmsSort'){pmsSort=el.value;render();return}
   if(el.dataset&&(el.dataset.pmsst||el.dataset.pmslv)){
