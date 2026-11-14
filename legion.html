@@ -57,7 +57,6 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4}
 .pills{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
 .pills button.on{background:#1d3b66;border-color:var(--accent)}
 .pills.shops button.on{background:#12381f;border-color:var(--green)}
-.pills.lgs button.on{background:#4a1d3a;border-color:#f472b6}
 td.wc{white-space:normal;text-align:left;min-width:230px}
 .ib{display:inline-block;background:var(--green-bg);border:1px solid var(--green);color:#7dffa8;border-radius:99px;padding:2px 9px;margin:2px;font-size:12.5px}
 .ib.next{background:#2a2a14;border-color:#6b5316;color:var(--amber)}
@@ -143,20 +142,44 @@ td input.icn{width:56px;text-align:center}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;margin-bottom:14px}
 .pgrid .stile.sm{width:auto;min-width:0}
 .tgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:14px}
-.tgrid .stile.sm{width:auto;min-width:0;min-height:84px;padding:5px 4px}
-.lkgrid{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}.lkgrid .chip{font-size:17px;padding:4px 12px}.lkgrid .lkp{font-size:15px;font-weight:800;border:3px solid var(--bc);background:var(--bg);color:var(--tx);border-radius:12px;padding:8px 14px}
-.lkbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}.lkbar label{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--muted,#9aa4b2)}.lkbar select{width:auto;min-width:150px;text-align:left;font-size:15px;padding:8px}
-.tgrid .stile .sub{font-size:12px;line-height:1.2;overflow-wrap:anywhere;font-weight:700}
+.tgrid .stile.sm{width:auto;min-width:0;min-height:62px;padding:5px 4px}
+.tgrid .stile .sub{font-size:9.5px;line-height:1.1;word-break:break-word}
 .ptile .trow{justify-content:space-between;align-items:center}
 .pcount{font-size:19px;font-weight:900;line-height:1}
-.ptile .ttl{font-size:13px;overflow-wrap:anywhere}
+.ptile .ttl{font-size:10.5px;overflow-wrap:anywhere}
 .ptile .chips{display:flex;flex-wrap:wrap;gap:2px;margin-top:auto}
-.chip{background:var(--bc);color:#fff;border-radius:6px;padding:2px 7px;font-size:14px;font-weight:800}
-.ptile .chips{gap:4px}
+.chip{background:var(--bc);color:#fff;border-radius:5px;padding:0 4px;font-size:10px;font-weight:800}
 .chip.hit{background:#16a34a}
 .tchips{display:flex;gap:6px;flex-wrap:wrap}
 .tchip{padding:4px 12px;font-size:15px;font-weight:800;border-radius:9px;border:2px solid var(--line);background:var(--panel2)}
 .tchip.hit{border-color:var(--green);background:var(--green-bg);color:#7dffa8}
+
+.pms-inv{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-bottom:12px}
+.icard{background:var(--panel);border:2px solid var(--bc,var(--line));border-radius:12px;padding:10px}
+.icard h4{margin:0 0 8px;font-size:13px;color:var(--bc)}
+.irow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0;font-size:13px}
+.irow input{width:84px;text-align:right}
+.pbar{position:relative;height:17px;background:#0b0f15;border-radius:9px;overflow:hidden;border:1px solid var(--line);margin-top:4px}
+.pbar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#2563eb,#38bdf8)}
+.pbar.up i{background:linear-gradient(90deg,#a21caf,#f472b6)}
+.pbar.rdy i{background:linear-gradient(90deg,#16a34a,#4ade80)}
+.pbar span{position:relative;z-index:1;display:block;text-align:center;font-size:11px;font-weight:700;line-height:15px;text-shadow:0 0 3px #000}
+.pgrid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.pcard{background:var(--panel);border:2px solid var(--bc);border-radius:11px;padding:8px}
+.pcard.sel{box-shadow:0 0 0 3px #fff8}
+.pcard .pname{display:block;width:100%;text-align:left;font-weight:800;font-size:14px;background:var(--bc);color:#fff;border:0;padding:4px 8px;border-radius:7px}
+.pcard small{color:var(--muted);display:block;margin-top:3px}
+.rar{font-size:10px;font-weight:800;padding:0 5px;border-radius:5px;background:#0006;margin-left:4px}
+.r-N{--bc:#64748b}.r-R{--bc:#2563eb}.r-SR{--bc:#9333ea}.r-SSR{--bc:#d97706}
+.pshr{display:flex;align-items:center;gap:6px;margin-top:5px;font-size:12px}.pshr input{width:70px;text-align:right}
+.pdet{scroll-margin-top:8px;background:var(--panel);border:2px solid var(--bc);border-radius:12px;padding:12px;margin-bottom:12px}
+.pdet .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.need{display:flex;justify-content:space-between;font-size:12.5px;margin-top:6px}
+.need b.ok{color:#fff}.need b.no{color:#ff4d4d}
+.rqs{display:flex;flex-wrap:wrap;gap:3px 8px;margin:2px 0 4px;font-size:11.5px;font-weight:700}.rq.ok{color:#fff}.rq.no{color:#ff4d4d}
+.fstock{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:2px 14px;margin-top:10px}
+.top5{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-bottom:12px}
+.top5 button{display:block;width:100%;text-align:left;padding:4px 6px;margin-top:5px;border-radius:8px}
 @media (max-width:700px){.cards{grid-template-columns:1fr}}
 @media (max-width:700px),(max-height:620px){
   header{padding:6px 10px;gap:6px;flex-wrap:nowrap;overflow-x:auto}
@@ -225,13 +248,9 @@ function migrate(){
   if(S.focus==null)S.focus='';
   if(S.focusMonth==null)S.focusMonth='';
   if(!S.targets)S.targets={assign:{},hit:{}};
-  if(!S.targets.legions){
-    const old=S.targets;
-    S.targets={cur:'',legions:[{id:uid(),name:'Legion 1',players:S.players.map(p=>({id:p.id,name:p.name})),assign:old.assign||{},hit:old.hit||{}}]};
-    S.targets.cur=S.targets.legions[0].id;
-  }
-  if(!S.targets.legions.some(l=>l.id===S.targets.cur))S.targets.cur=S.targets.legions[0].id;
+  if(!S.pms)S.pms={};
   defaultShops().forEach(d=>{if(!S.shops.some(x=>x.id===d.id))S.shops.push(d)});
+  if(!S.pmsFix1){S.pmsFix1=true;S.players.forEach(p=>{if(/^\s*maverick\s*$/i.test(p.name)){const m=S.pms[p.id];if(m&&m.p&&m.p.Skuld&&(+m.p.Skuld.up||0)<10)m.p.Skuld.up=10}})}
   S.players.forEach(p=>{
     if(!p.points)p.points={};
     if(!p.bought)p.bought={};
@@ -293,7 +312,7 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const val=v=>v==null?'':v;
 
 /* ============ TABS ============ */
-const TABS=[['daily','✅ Daily Tasks','#22c55e'],['players','👤 Players & Power','#4f9cff'],['legion','🐉 Legion Hunt','#a78bfa'],['season','🌋 Titan Challenge','#fb923c'],['targets','🎯 Legion Targets','#f472b6'],['shops','🛒 Shops & Resources','#2dd4bf']];
+const TABS=[['daily','✅ Daily Tasks','#22c55e'],['players','👤 Players & Power','#4f9cff'],['legion','🐉 Legion Hunt','#a78bfa'],['season','🌋 Titan Challenge','#fb923c'],['targets','🎯 Legion Targets','#f472b6'],['shops','🛒 Shops & Resources','#2dd4bf'],['pms','🧑‍✈️ Pilots (PMS)','#38bdf8']];
 let tab=(()=>{try{return localStorage.getItem(KEY+'_tab')||'daily'}catch(e){return 'daily'}})();
 if(!TABS.some(t=>t[0]===tab))tab='daily';
 
@@ -306,8 +325,9 @@ function render(){
   const v=document.getElementById('view');
   const oldW=v.querySelector('.wrap'),sx=oldW?oldW.scrollLeft:0,sy=oldW?oldW.scrollTop:0,mt=v.scrollTop,sameTab=v.dataset.shown===tab;
   const banner=S.date!==todayStr()?`<div class="banner">📆 The day has changed since your last session (${S.date}). <button class="btn-accent" id="bnDay">Start new day (reset Done buttons)</button> <button id="bnKeep">Keep as is</button></div>`:'';
-  v.innerHTML=banner+({daily:vDaily,players:vPlayers,legion:vLegion,season:vSeason,targets:vTargets,gear:vGear,shops:vShops,tier:vTier}[tab])();
+  v.innerHTML=banner+({daily:vDaily,players:vPlayers,legion:vLegion,season:vSeason,targets:vTargets,pms:vPms,gear:vGear,shops:vShops,tier:vTier}[tab])();
   v.dataset.shown=tab;
+  if(tab==='pms')pmsApplyQ();
   setTabOrder();
   document.querySelectorAll('#view .wrap thead tr:first-child th:first-child').forEach(th=>{const d=document.createElement('span');d.className='rsz';d.title='Drag to resize';th.appendChild(d)});
   if(sameTab){const w=v.querySelector('.wrap');if(w){w.scrollLeft=sx;w.scrollTop=sy}v.scrollTop=mt}
@@ -376,33 +396,27 @@ function vSeason(){
 const TG_ROWS=[['A','#ffe0e6','#e0506e','#52082a'],['B','#fff1d6','#e8890c','#4a2b00'],['C','#d9f4ec','#10a37f','#04382b'],['D','#dbeaff','#2f7fe8','#0a2850']];
 const TG_COLS=5;
 const PCOL=[['#fff1d6','#e8890c','#4a2b00'],['#ece3ff','#7c3aed','#26104f'],['#d9f4ec','#10a37f','#04382b'],['#dbeaff','#2f7fe8','#0a2850'],['#ffdfe9','#e0447a','#52082a'],['#fff9c4','#d4b106','#3d3300'],['#e0f7fa','#00acc1','#00363d'],['#f3e5f5','#ab47bc','#35103b']];
-let tgSel='',lkP='',lkT='';
-const curL=()=>{const T=S.targets;return T.legions.find(l=>l.id===T.cur)||T.legions[0]};
-const LP=id=>curL().players.find(p=>p.id===id);
-const tgList=id=>(curL().assign[id]||[]);
+let tgSel='';
+const tgList=id=>(S.targets.assign[id]||[]);
 function vTargets(){
-  const T=S.targets,L=curL();
-  if(tgSel&&!LP(tgSel))tgSel='';
-  const sp=tgSel?LP(tgSel):null;
+  const T=S.targets;
+  if(tgSel&&!P(tgSel))tgSel='';
+  const sp=tgSel?P(tgSel):null;
   const who={};
-  L.players.forEach(p=>tgList(p.id).forEach(c=>(who[c]=who[c]||[]).push(p)));
-  let h=`<div class="pills lgs">${T.legions.map(l=>`<button data-lgsel="${l.id}" class="${l.id===L.id?'on':''}">${esc(l.name)}</button>`).join('')}<button class="btn-accent" data-lgadd="1">＋ Legion</button></div>
-  <div class="pills"><button data-lgren="1">✏ Rename legion</button>${T.legions.length>1?'<button class="btn-danger" data-lgdel="1">🗑 Delete legion</button>':''}</div>`;
-  h+='<div class="buybar">';
+  S.players.forEach(p=>tgList(p.id).forEach(c=>(who[c]=who[c]||[]).push(p)));
+  let h='<div class="buybar">';
   if(sp){
     const list=tgList(sp.id);
     h+=`<div class="bbmain" style="--bc:#f472b6"><div><b>${esc(sp.name)}</b> <span class="cnt">· ${list.length} target${list.length===1?'':'s'}</span></div>
-    <div class="tchips">${list.length?list.map(c=>{const hit=L.hit[sp.id+'|'+c];return `<button class="tchip${hit?' hit':''}" data-thit="${c}">${hit?'✓ ':''}${c}</button>`}).join(''):'<span class="cnt">none yet</span>'}</div>
+    <div class="tchips">${list.length?list.map(c=>{const hit=T.hit[sp.id+'|'+c];return `<button class="tchip${hit?' hit':''}" data-thit="${c}">${hit?'✓ ':''}${c}</button>`}).join(''):'<span class="cnt">none yet</span>'}</div>
     <div class="bbbtns"><button data-tclr="1">Clear</button><button data-tnone="1">✕</button></div></div>
-    <div class="cnt" style="margin-top:6px">Tap targets below to add/remove. Tap a chip to tick it as hit.</div>
-    <div class="pills" style="margin-top:6px"><button data-pren="1">✏ Rename ${esc(sp.name)}</button><button class="btn-danger" data-pdel="1">🗑 Remove ${esc(sp.name)}</button></div>`;
+    <div class="cnt" style="margin-top:6px">Tap targets below to add/remove. Tap a chip to tick it as hit.</div>`;
   }else h+='<span class="cnt">👆 Tap a player tile to select him, then tap target tiles to assign. Tap a player tile later to see his targets under it and tick them off.</span>';
   h+='</div>';
-  h+=`<div class="card"><h3>${esc(L.name)} players <span class="cnt">tap to select</span></h3><div class="pills"><button class="btn-accent" data-padd="1">＋ Add player</button><button data-pimp="1">⬇ Add from tracker players</button></div><div class="pgrid">`;
-  if(!L.players.length)h+='<span class="cnt">No players yet — tap “＋ Add player” and type a name.</span>';
-  L.players.forEach((p,i)=>{
+  h+='<div class="card"><h3>Players <span class="cnt">tap to select</span></h3><div class="pgrid">';
+  S.players.forEach((p,i)=>{
     const [bg,bc,tx]=PCOL[i%PCOL.length],list=tgList(p.id),on=p.id===tgSel;
-    h+=`<button class="stile sm ptile${on?' sel':''}" data-ptile="${p.id}" style="--bg:${bg};--bc:${bc};--tx:${tx}"><span class="trow"><span class="cbx">${on?'✓':''}</span><span class="pcount">${list.length||'—'}</span></span><span class="ttl">${esc(p.name)}</span><span class="chips">${list.map(c=>`<span class="chip${L.hit[p.id+'|'+c]?' hit':''}">${c}</span>`).join('')}</span></button>`;
+    h+=`<button class="stile sm ptile${on?' sel':''}" data-ptile="${p.id}" style="--bg:${bg};--bc:${bc};--tx:${tx}"><span class="trow"><span class="cbx">${on?'✓':''}</span><span class="pcount">${list.length||'—'}</span></span><span class="ttl">${esc(p.name)}</span><span class="chips">${list.map(c=>`<span class="chip${T.hit[p.id+'|'+c]?' hit':''}">${c}</span>`).join('')}</span></button>`;
   });
   h+='</div></div><div class="card"><h3>Targets <span class="cnt">enemy formation</span></h3><div class="tgrid">';
   TG_ROWS.forEach(([r,bg,bc,tx])=>{
@@ -412,17 +426,7 @@ function vTargets(){
       h+=`<button class="stile sm tt${mine?' sel':''}" data-tgt="${c}" style="--bg:${bg};--bc:${bc};--tx:${tx}"><span class="trow"><span class="cbx">${mine?'✓':''}</span><span class="ttl" style="font-size:15px">${c}</span></span><span class="sub">${names}</span></button>`;
     }
   });
-  h+='</div></div>';
-  if(lkP&&!LP(lkP))lkP='';
-  const allT=[];TG_ROWS.forEach(([r])=>{for(let n=1;n<=TG_COLS;n++)allT.push(r+n)});
-  h+=`<div class="card"><h3>🔎 Look up <span class="cnt">pick a player or a target</span></h3><div class="lkbar">
-   <label>Player<select id="lkP"><option value="">— choose player —</option>${L.players.map(p=>`<option value="${p.id}"${p.id===lkP?' selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
-   <label>Target<select id="lkT"><option value="">— choose target —</option>${allT.map(c=>`<option value="${c}"${c===lkT?' selected':''}>${c}</option>`).join('')}</select></label></div>`;
-  if(lkP){const lp=LP(lkP),ix=L.players.indexOf(lp),[bg,bc,tx]=PCOL[ix%PCOL.length],list=tgList(lkP);
-    h+=`<div style="--bg:${bg};--bc:${bc};--tx:${tx}"><b>${esc(lp.name)}</b> <span class="cnt">· ${list.length} target${list.length===1?'':'s'}</span><div class="lkgrid">${list.length?list.map(c=>`<span class="chip${L.hit[lkP+'|'+c]?' hit':''}">${L.hit[lkP+'|'+c]?'✓ ':''}${c}</span>`).join(''):'<span class="cnt">no targets assigned</span>'}</div></div>`;}
-  if(lkT){const ws=who[lkT]||[];
-    h+=`<div><b>${lkT}</b> <span class="cnt">· ${ws.length} player${ws.length===1?'':'s'} can hit</span><div class="lkgrid">${ws.length?ws.map(p=>{const [bg,bc,tx]=PCOL[L.players.indexOf(p)%PCOL.length];return `<span class="lkp" style="--bg:${bg};--bc:${bc};--tx:${tx}">${esc(p.name)}${L.hit[p.id+'|'+lkT]?' ✓':''}</span>`}).join(''):'<span class="cnt">nobody assigned</span>'}</div></div>`;}
-  h+='</div><div class="pills"><button data-tclrhits="1">Clear hit ticks</button><button class="btn-danger" data-tclrall="1">Clear all targets</button></div>';
+  h+='</div></div><div class="pills"><button data-tclrhits="1">Clear hit ticks</button><button class="btn-danger" data-tclrall="1">Clear all targets</button></div>';
   return h;
 }
 function vGear(){
@@ -629,6 +633,163 @@ function vTier(){
   return h+'</tbody></table></div>';
 }
 
+
+/* ============ PILOT MANAGEMENT SYSTEM ============ */
+const PILOTS=[["Achilles","N","ED+PDB","Attack On Strong Foes Increase",0,6,5],["Ariadne","N","EDB+ED","Damage Against Players Increase",0,6,7],["Axel","N","ED+PD","Damage Cause By Ground And Sea Enemies Increase",0,6,7],["Balder","N","PDB+ED","Wingun Attack Increase",5,6,7],["CuChulainn","N","PD+PDB","Stars Output In Idle Rewards Increse",0,6,7],["Duibhne","N","PDB+EDB","Attack On Strong Foes Increase",5,6,5],["Eir","N","EDB+PDB","Damage Cause By Players Reduce",0,6,7],["Flora","N","PD+ED","Attack On Normal Enemies",5,6,4],["Halen","N","PD+PDB","Maingun Attack Increase",0,7,7],["Haley","N","PD+PDB","Armor Hp Increase",5,6,7],["Hayes","N","EDB+PD","Damage Against Ground And See Enimies Increase",50,6,6],["Indra","N","EDB+ED","Attack On Bosses",25,6,7],["Juliet","N","EDB+ED","Attack On Normal Enemies",0,6,4],["Kaguya","N","EDB+PD","Attack On Bosses",0,6,7],["Pandora","N","EDB+PD","Missile Attack Increasre",0,6,7],["Pudge","N","PD+ED","Stars Output In Bombarding Increase",0,6,5],["Ame-no-Uzume","R","PD+ED","Damage Cause By Aerial Enimies Reduce",240,5,7],["Amun","R","EDB+ED","Attack On Normal Enemies",135,5,5],["Aphrodite","R","EDB+PD","Damage Against Strong Foes Inrease",145,6,6],["Beelphegor","R","EDB+ED","Damage Cause By Bosses Reduced",155,5,7],["Daedalus","R","PDB+EDB","Damage Against Bosses",190,5,7],["Darren","R","ED+PD","Wingun Crit Damage Reduction Increase",260,5,7],["Epona","R","EDB+ED","Damage Cause By Aerial + Players Reduce",156,6,7],["Evelyn","R","EDB+PD","Missile Crit Damage Reduction Increase",30,5,7],["Fiona","R","PDB+ED","Maingun Crit Rate Increase",105,4,7],["Gary","R","PDB+EDB","Wingun Crit Rate Increase",115,5,7],["Grace","R","PD+PDB","Missile Crit Rate Increase",180,5,7],["Guinvere","R","PDB+EDB","Maingun Attack Increase",210,5,7],["Gulveig","R","PDB+EDB","Damage Against Players",130,5,7],["Gunnlod","R","PDB+PD","Wingun Attack Increase",90,6,7],["Hebe","R","EDB+ED","Armor Hp Increase",10,6,7],["Hecate","R","PDB+PD","Damage Against Normal Enimies Increase",134,6,7],["Janus","R","PDB+ED","Damage Against Bosses",170,5,7],["Jason","R","PDB+EDB","Damage Against Aerial + Players Increases",120,7,10],["Jeanne D'Arc","R","ED+PD","Damage Cause By Players Reduce",137,5,7],["Kali","R","PDB+EDB","Damage Against Normal Enimies Increase",230,5,6],["Lora","R","EDB+ED","Maingun Crit Damage Reduction Increase",50,5,7],["Lucifer","R","EDB+ED","Missile Attack Increasre",100,6,7],["Minerva","R","PDB+ED","Damage Against Strong Foes Inrease",120,6,7],["Morgana","R","PDB+ED","Attack On Strong Foes Increase",50,6,7],["Nuada","R","EDB+PD","Attack On Bosses",420,5,7],["Paris","R","PD+EDB","Damage Cause By Strong Foes Reduce",300,5,5],["Tyche","R","PDB+PD","Damage Against Aerial Enimies Increase",260,5,7],["Valkyrie","R","PD+ED","Armor Hp Increase",117,7,8],["Vesta","R","PDB+PD","Stars Output In Bombarding Increase",240,5,4],["Vulcan","R","PD+ED","Damage Caused By Normal Enimies Reduced",190,5,5],["Aiden","SR","EDB+PDB","Maingun Crit Damage Increase",45,4,10],["Artemis","SR","PD+ED","Hit Rate Increase",30,5,10],["Athena","SR","EDB+ED","Crit Resistance Increase",50,3,7],["Bellona","SR","EDB+ED","Missile Attack Increasre",105,3,8],["Beryl","SR","EDB+PD","Maingun Crit Resistance Increase",40,4,8],["Brunhild","SR","PDB+ED","Maingun Base Attack Increase",140,4,7],["Cassius","SR","PDB+ED","Wingun Crit Resistance Increases",50,3,7],["Chloe","SR","ED+PD","Missile Crit Resistance Increase",95,3,8],["Clotho","SR","EDB+ED","Missile Base Attack+",0,5,8],["Damira","SR","EDB+ED","Wingun Crit Damage Increase",70,3,7],["Elise","SR","PDB+PD","Missile Crit Damage Increase",75,4,10],["Freya","SR","PD+PDB","Dodge Rate Increase",35,5,8],["Hanzo","SR","PDB+EDB","Crit Rate Increase",20,6,10],["Hel","SR","PDB+EDB","Damage Against Aerial + Players Increases",55,5,7],["Hephaestus","SR","PDB+EDB","Damage Against Players Increase",270,7,10],["Heracles","SR","PDB+EDB","Maingun Attack Increase",50,4,7],["Hestia","SR","PDB+ED","Crit Damage Increase",110,5,7],["Irene","SR","PDB+EDB","Maingun Damage Increase",20,4,8],["Lancelot","SR","EDB+PD","Crit Damage Reduction Increase",80,5,8],["Morrigan","SR","PDB+PD","Wingun Damage Increase",95,3,7],["Mwindo","SR","PD+ED","Damage Caused By Aerial + Players Reduce",115,4,7],["Nymph","SR","PD+ED","Damage Caused By Missile Reduced",25,5,8],["Oya","SR","ED+PDB","Armor Hp Increase",65,3,8],["Shango","SR","ED+PDB","Damage Caused By Maingun Reduced",10,4,9],["Siegfried","SR","EDB+PD","Wingun Base Attack Increase",65,4,9],["Sif","SR","EDB+PD","Damage Against Ground And See Enimies Increase",90,4,7],["Skuld","SR","PD+ED","Damage Caused By Players Reduced",360,6,10],["Spes","SR","PD+ED","Damage Caused By Ground And See Enimies Increase",20,4,7],["Susanoo","SR","PDB+PD","Armor Base Hp+",60,4,7],["Thetis","SR","EDB+PD","Damage Cause By Wingun Reduced",90,3,7],["Vesna","SR","PDB+PD","Wingun Attack Increase",10,5,7],["Vivian","SR","EDB+ED","Missile Damage Increase",30,4,9],["Lillian Ray","SR","PDB+EDB","Damage Against Aerial + Players Increases",10,2,5],["Viko Dream","SR","PD+ED","Damage Caused By Aerial + Players Reduce",0,2,6],["Dean Laser","SR","PDB+ED","Healing Enhancement",0,2,7],["Auraeon","SSR","PDB+PD","Armor Base Hp+",0,2,3],["Elandir","SSR","PDB+ED","Armor Base Hp+",0,2,6],["Leonalra","SSR","ED+EDB","Armor Base Hp+",0,2,7],["Saraphina","SSR","EDB+PD","Armor Base Hp+",0,0,0],["Rosalind","SSR","PDB+PD","Sentinel Enhancement",20,0,0]]; // [name,rarity,attr,skill,shards(Maverick),star(7=Awakened),upgrade]
+const GUIDE=[['gBasic','Basic'],['gStd','Standard'],['gAdv','Advanced'],['gExp','Expert']];
+const EVO={
+ SR:{unlock:{shards:40},steps:[{badges:40},{badges:80},{badges:160,shards:60},{badges:300,shards:120},{badges:500,shards:180,purple:200},{badges:1200,shards:240,purple:400},{badges:1800,gold:800,purple:800,blue:1500}]},
+ R:{unlock:{shards:30},steps:[{badges:30},{badges:60},{badges:120,shards:45},{badges:180,shards:90},{badges:300,shards:135,blue:200},{badges:900,shards:180,blue:400},{badges:1350,purple:900,blue:800}]}
+};
+const UPG={
+ SR:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gExp',50],['gExp',100],['gExp',125],['gExp',150]],
+ R:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gAdv',200],['gExp',100],['gExp',125],['gExp',150]]
+};
+const RESN={badges:'Pilot Badges',gold:'Golden Pieces',purple:'Purple Pieces',blue:'Blue Pieces',shards:'Pilot Shards',gBasic:'Basic Guides',gStd:'Standard Guides',gAdv:'Advanced Guides',gExp:'Expert Guides'};
+let pmsShowAll=false,pmsPid='',pmsFil='ALL',pmsSort='evo',pmsQ='';
+const nz=v=>(+v||0);
+function getPms(pid){
+  let m=S.pms[pid];
+  if(!m){
+    m=S.pms[pid]={inv:{badges:0,gold:0,purple:0,blue:0,gBasic:0,gStd:0,gAdv:0,gExp:0},focus:'',p:{}};
+    const pl=P(pid);
+    if(pl&&/maverick/i.test(pl.name))PILOTS.forEach(a=>{m.p[a[0]]={s:a[4],st:a[5],up:a[6]}});
+  }
+  if(!m.inv)m.inv={};
+  Object.keys({badges:1,gold:1,purple:1,blue:1,gBasic:1,gStd:1,gAdv:1,gExp:1}).forEach(k=>{if(m.inv[k]==null)m.inv[k]=0});
+  [['selSR','gold'],['selR','purple'],['selN','blue']].forEach(([o,n])=>{if(m.inv[o]!=null){m.inv[n]=Math.max(nz(m.inv[n]),nz(m.inv[o]));delete m.inv[o]}});
+  if(m.focus==null)m.focus='';
+  if(!m.p)m.p={};
+  return m;
+}
+function pst(m,a){return m.p[a[0]]||(m.p[a[0]]={s:0,st:0,up:0})}
+function evoNeed(a,st){ // returns [[res,need]] or null (maxed / no data)
+  const E=EVO[a[1]];if(!E||st>=7)return null;
+  const o=st<0?E.unlock:E.steps[st];return Object.entries(o);
+}
+function upNeed(a,up){const U=UPG[a[1]];if(!U||up>=10)return null;return [U[up]]}
+function resHave(m,s,k){return k==='shards'?nz(s.s):nz(m.inv[k])}
+function prog(m,s,need){
+  if(!need||!need.length)return null;
+  let sum=0,ok=true;
+  need.forEach(([k,n])=>{const h=resHave(m,s,k);sum+=Math.min(1,h/n);if(h<n)ok=false});
+  return {pct:sum/need.length,ok};
+}
+function pbar(p,label,cls){
+  if(!p)return `<div class="pbar"><span style="color:#8b95a7">${label}</span></div>`;
+  const pc=Math.round(p.pct*100);
+  return `<div class="pbar ${p.ok?'rdy':cls||''}"><i style="width:${pc}%"></i><span>${label} ${p.ok?'✔ READY':pc+'%'}</span></div>`;
+}
+function starTxt(st){return st>=7?'🌟 Awakened':st<0?'🔒 Locked':'★'.repeat(st)+'☆'.repeat(6-st)}
+function pmsRows(m){
+  return PILOTS.map(a=>{const s=pst(m,a);return {a,s,evo:prog(m,s,evoNeed(a,s.st)),upg:prog(m,s,upNeed(a,s.up))}});
+}
+function pmsTop(m){
+  const rows=pmsRows(m);
+  const mk=(key,title,cls)=>{
+    const l=rows.filter(r=>r[key]&&r[key].pct>0).sort((x,y)=>(y[key].ok-x[key].ok)||(y[key].pct-x[key].pct)).slice(0,5);
+    return `<div class="icard" style="--bc:${key==='evo'?'#38bdf8':'#f472b6'}"><h4>${title}</h4>${l.length?l.map(r=>`<button class="r-${r.a[1]}" data-pmssel="${esc(r.a[0])}" style="border-color:var(--bc)"><b>${esc(r.a[0])}</b> <span class="rar">${r.a[1]}</span> <small style="display:inline">${key==='evo'?starTxt(r.s.st)+' → next':'Lv '+r.s.up+' → '+(r.s.up+1)}</small>${pbar(r[key],'',cls)}${chips(m,r.s,key==='evo'?evoNeed(r.a,r.s.st):upNeed(r.a,r.s.up))}</button>`).join(''):'<small>No data yet</small>'}</div>`};
+  return `<div class="top5">${mk('evo','⭐ Closest to EVOLVE','')}${mk('upg','⬆ Closest to UPGRADE','up')}</div>`;
+}
+const RIC={badges:'🎖',shards:'🧩',gold:'🟡',purple:'🟣',blue:'🔵',gBasic:'📗',gStd:'📘',gAdv:'📙',gExp:'📕'};
+const selKey=a=>a[1]==='SR'?'gold':a[1]==='R'?'purple':a[1]==='N'?'blue':'';
+function stateTxt(kind,a,s){
+  if(kind==='evo'){if(!EVO[a[1]])return 'no data';if(s.st>=7)return '✔ MAX'}
+  else{if(!UPG[a[1]])return 'no data';if(s.up>=10)return '✔ MAX'}
+  return '';
+}
+function needList(m,s,need,state){
+  if(!need)return '<small>'+(state==='✔ MAX'?'✔ Fully maxed':'No cost data for this rarity.')+'</small>';
+  return need.map(([k,n])=>{const h=resHave(m,s,k);return `<div class="need"><span>${RIC[k]||''} ${RESN[k]}</span><b class="${h>=n?'ok':'no'}">${h.toLocaleString()} / ${n.toLocaleString()}</b></div>`+pbar({pct:Math.min(1,h/n),ok:h>=n},'')}).join('');
+}
+function chips(m,s,need){
+  if(!need)return '';
+  return '<div class="rqs">'+need.map(([k,n])=>{const h=resHave(m,s,k);return `<span class="rq ${h>=n?'ok':'no'}">${RIC[k]||''} ${h.toLocaleString()}/${n.toLocaleString()}</span>`}).join('')+'</div>';
+}
+function cardBars(m,a,s){
+  const en=evoNeed(a,s.st),un=upNeed(a,s.up),se=stateTxt('evo',a,s),su=stateTxt('upg',a,s);
+  return pbar(prog(m,s,en),'Evolve'+(se?' '+se:''),'')+chips(m,s,en)+pbar(prog(m,s,un),'Upgrade'+(su?' '+su:''),'up')+chips(m,s,un);
+}
+function pmsFocusLive(m){
+  const a=PILOTS.find(x=>x[0]===m.focus);if(!a)return '';
+  const s=pst(m,a),en=evoNeed(a,s.st),un=upNeed(a,s.up),ep=prog(m,s,en),up=prog(m,s,un);
+  const evoLbl=en?(s.st<0?'Unlock':s.st>=6?'Awaken':'Evolve to '+(s.st+1)+' ★'):'';
+  const sk=selKey(a),sel=sk?nz(m.inv[sk]):0,sn={gold:'Golden pieces',purple:'Purple pieces',blue:'Blue pieces'}[sk];
+  return `<div class="cols" style="margin-top:12px">
+    <div><b>⭐ Evolve${en?' – next: '+evoLbl:''}</b><div style="margin:4px 0">${starTxt(s.st)}</div>${needList(m,s,en,stateTxt('evo',a,s))}
+      ${en?`<div style="margin-top:8px"><button class="btn-accent" data-pmsdo="evo" ${ep&&ep.ok?'':'disabled'}>${evoLbl} now</button></div>`:''}</div>
+    <div><b>⬆ Upgrade${un?' – next: Lv '+(s.up+1):''}</b><div style="margin:4px 0">Level ${s.up} / 10</div>${needList(m,s,un,stateTxt('upg',a,s))}
+      ${un?`<div style="margin-top:8px"><button class="btn-accent" data-pmsdo="upg" ${up&&up.ok?'':'disabled'}>Upgrade to Lv ${s.up+1} now</button></div>`:''}</div>
+   </div>
+   ${sk?`<div style="margin-top:10px"><small>${sn} in stock: <b>${sel}</b></small> <button data-pmsuse="1" ${sel>0?'':'disabled'}>Convert → ${esc(a[0])} shards</button> <input id="pmsUseQty" data-num="1" type="text" inputmode="decimal" placeholder="qty" style="width:70px"></div>`:''}`;
+}
+function pmsFocusBox(m){
+  const a=PILOTS.find(x=>x[0]===m.focus);
+  const opts=['SSR','SR','R','N'].map(r=>`<optgroup label="${r}">${PILOTS.filter(x=>x[1]===r).map(x=>`<option value="${esc(x[0])}" ${x[0]===m.focus?'selected':''}>${esc(x[0])}</option>`).join('')}</optgroup>`).join('');
+  const sel=`<select id="pmsFocusSel" style="width:auto;min-width:150px"><option value="">— choose pilot —</option>${opts}</select>`;
+  if(!a)return `<div id="pmsFocus" class="pdet" style="--bc:#38bdf8"><b>🎯 Focus Pilot</b> ${sel}<br><small style="color:var(--muted)">Pick a pilot (or tap any pilot card below) to watch his Evolve and Upgrade live.</small></div>`;
+  const s=pst(m,a),en=evoNeed(a,s.st),un=upNeed(a,s.up);
+  const stOpts=[-1,0,1,2,3,4,5,6,7].map(v=>`<option value="${v}" ${v===s.st?'selected':''}>${v<0?'🔒 Locked':v>=7?'🌟 Awakened':v+' ★'}</option>`).join('');
+  const lvOpts=[0,1,2,3,4,5,6,7,8,9,10].map(v=>`<option value="${v}" ${v===s.up?'selected':''}>Lv ${v}</option>`).join('');
+  const keys=[];[...(en||[]),...(un||[])].forEach(([k])=>{if(!keys.includes(k))keys.push(k)});
+  const inputs=keys.map(k=>`<div class="irow"><span>${RIC[k]||''} ${RESN[k]}</span><input data-pms="${k==='shards'?'sh|'+esc(a[0]):'inv|'+k}" data-num="1" type="text" inputmode="decimal" value="${val(k==='shards'?(s.s||''):(m.inv[k]||''))}" placeholder="0"></div>`).join('');
+  return `<div id="pmsFocus" class="pdet r-${a[1]}"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><div><b style="font-size:13px;color:var(--muted)">🎯 FOCUS PILOT</b><br><b style="font-size:18px">${esc(a[0])}</b> <span class="rar" style="background:var(--bc)">${a[1]}</span><br><small style="color:var(--muted)">${esc(a[2])} · ${esc(a[3])}</small></div>
+   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${sel}<select data-pmsst="${esc(a[0])}">${stOpts}</select><select data-pmslv="${esc(a[0])}">${lvOpts}</select><button data-pmsclose="1">✕</button></div></div>
+   ${inputs?`<div class="fstock">${inputs}</div>`:''}
+   <div id="fLive">${pmsFocusLive(m)}</div></div>`;
+}
+function vPms(){
+  if(!S.players.some(p=>p.id===pmsPid))pmsPid=(S.players[0]||{}).id||'';
+  const p=P(pmsPid);if(!p)return '<div class="calc">Add a player first.</div>';
+  const m=getPms(pmsPid),I=(k,l)=>`<div class="irow"><span>${l}</span><input data-pms="inv|${k}" data-num="1" type="text" inputmode="decimal" value="${val(m.inv[k]||'')}" placeholder="0"></div>`;
+  let h=`<div class="calc"><b>Player:</b> <select id="pmsPlayer" style="min-width:170px">${S.players.map((q,i)=>`<option value="${q.id}" ${q.id===pmsPid?'selected':''}>#${i+1} ${esc(q.name)}</option>`).join('')}</select>
+   <span style="color:var(--muted);font-size:12.5px">Pilot shards & inventory below belong to this player only.</span></div>
+   <div id="pmsFocusWrap">${pmsFocusBox(m)}</div>
+   <div class="pms-inv">
+    <div class="icard" style="--bc:#facc15"><h4>🎖 Pilot Badges</h4>${I('badges','Badges')}</div>
+    <div class="icard" style="--bc:#c084fc"><h4>💎 Pieces</h4>${I('gold','🟡 Golden (SR selectable)')}${I('purple','🟣 Purple (R selectable)')}${I('blue','🔵 Blue (N selectable)')}</div>
+    <div class="icard" style="--bc:#4ade80"><h4>📘 Training Guides</h4>${GUIDE.map(g=>I(g[0],g[1])).join('')}</div>
+   </div>
+   <div id="pmsTopBox">${pmsTop(m)}</div>`;
+  if(!pmsShowAll)return h+'<p><button data-pmsall="1">📋 Show all pilots</button> <small style="color:var(--muted)">All other pilots stay hidden; only the 5 closest to evolve / upgrade are shown above.</small></p>';
+  h+='<p><button data-pmsall="1">🙈 Hide all pilots</button></p>';
+  const fl=['ALL','SSR','SR','R','N'];
+  h+=`<div class="calc"><span class="pills">${fl.map(f=>`<button data-pmsfil="${f}" class="${f===pmsFil?'on':''}">${f==='ALL'?'All 86':f}</button>`).join('')}</span>
+   <select id="pmsSort"><option value="evo" ${pmsSort==='evo'?'selected':''}>Sort: nearest evolve</option><option value="upg" ${pmsSort==='upg'?'selected':''}>Sort: nearest upgrade</option><option value="name" ${pmsSort==='name'?'selected':''}>Sort: name</option><option value="sh" ${pmsSort==='sh'?'selected':''}>Sort: most shards</option></select>
+   <input id="pmsQ" type="text" placeholder="Search pilot…" value="${esc(pmsQ)}" style="width:150px"></div>`;
+  let rows=pmsRows(m).filter(r=>pmsFil==='ALL'||r.a[1]===pmsFil);
+  const sc=r=>pmsSort==='evo'?(r.evo?r.evo.pct+(r.evo.ok?1:0):-1):pmsSort==='upg'?(r.upg?r.upg.pct+(r.upg.ok?1:0):-1):pmsSort==='sh'?nz(r.s.s):0;
+  if(pmsSort==='name')rows.sort((x,y)=>x.a[0].localeCompare(y.a[0]));else rows.sort((x,y)=>sc(y)-sc(x));
+  h+=`<div class="pgrid2">`+rows.map(r=>{const a=r.a,s=r.s;
+   return `<div class="pcard r-${a[1]} ${a[0]===m.focus?'sel':''}" data-nm="${esc(a[0].toLowerCase())}" data-key="${esc(a[0])}"><button class="pname" data-pmssel="${esc(a[0])}">${esc(a[0])}<span class="rar">${a[1]}</span> <span style="float:right;font-weight:600;font-size:11px">${esc(a[2])}</span></button>
+    <small>${esc(a[3])}</small><small>${starTxt(s.st)} · Lv ${s.up}/10</small>
+    <div class="pshr">Shards <input data-pms="sh|${esc(a[0])}" data-num="1" type="text" inputmode="decimal" value="${val(s.s||'')}" placeholder="0"></div>
+    <div class="pbars">${cardBars(m,a,s)}</div></div>`}).join('')+`</div>`;
+  return h;
+}
+function pmsApplyQ(){const q=pmsQ.trim().toLowerCase();document.querySelectorAll('.pcard').forEach(c=>{c.style.display=!q||c.dataset.nm.includes(q)?'':'none'})}
+function pmsRefresh(){
+  const m=getPms(pmsPid),t=document.getElementById('pmsTopBox'),l=document.getElementById('fLive');
+  if(t)t.innerHTML=pmsTop(m);if(l)l.innerHTML=pmsFocusLive(m);
+  document.querySelectorAll('.pcard').forEach(c=>{const a=PILOTS.find(x=>x[0]===c.dataset.key),s=pst(m,a),b=c.querySelector('.pbars');if(b)b.innerHTML=cardBars(m,a,s)});
+  document.querySelectorAll('#view [data-pms]').forEach(i=>{
+    if(i===document.activeElement)return;
+    const [g,k]=i.dataset.pms.split('|');let v=0;
+    if(g==='inv')v=m.inv[k];else{const a=PILOTS.find(x=>x[0]===k);if(a)v=pst(m,a).s}
+    i.value=v?v:'';
+  });
+}
+function pmsAct(kind){
+  const m=getPms(pmsPid),a=PILOTS.find(x=>x[0]===m.focus);if(!a)return;const s=pst(m,a);
+  const need=kind==='evo'?evoNeed(a,s.st):upNeed(a,s.up);const pr=prog(m,s,need);
+  if(!need||!pr||!pr.ok){toast('Not enough resources');return}
+  const txt=need.map(([k,n])=>n+' '+RESN[k]).join(', ');
+  if(!confirm((kind==='evo'?'Evolve ':'Upgrade ')+a[0]+'? This spends: '+txt))return;
+  need.forEach(([k,n])=>{if(k==='shards')s.s=nz(s.s)-n;else m.inv[k]=nz(m.inv[k])-n});
+  if(kind==='evo')s.st+=1;else s.up+=1;
+  save();render();
+}
+
 /* ============ LOGIC ============ */
 const bcls=o=>o==='Advance'?'b-adv':o==='Unchanged'?'b-same':'b-dem';
 function tierOutcome(tier,rank){
@@ -656,26 +817,28 @@ document.addEventListener('click',e=>{
   if(t.dataset.all){const p=P(t.dataset.all);const allOn=DAILY.every(([k])=>p.daily[k]);DAILY.forEach(([k])=>p.daily[k]=!allOn);save();render();return}
   if(t.dataset.mv){const [id,d]=t.dataset.mv.split('|');movePlayer(id,S.players.indexOf(P(id))+ +d);return}
   if(t.dataset.allg){const [id,gi]=t.dataset.allg.split('|');const p=P(id),keys=DAILY_GROUPS[+gi].cols.map(c=>c[0]);const allOn=keys.every(k=>p.daily[k]);keys.forEach(k=>p.daily[k]=!allOn);save();render();return}
+  if(t.dataset.pmssel){getPms(pmsPid).focus=t.dataset.pmssel;save();render();const d=document.getElementById('pmsFocus');if(d)d.scrollIntoView({block:'start'});return}
+  if(t.dataset.pmsall){pmsShowAll=!pmsShowAll;render();return}
+  if(t.dataset.pmsclose){getPms(pmsPid).focus='';save();render();return}
+  if(t.dataset.pmsfil){pmsFil=t.dataset.pmsfil;render();return}
+  if(t.dataset.pmsdo){pmsAct(t.dataset.pmsdo);return}
+  if(t.dataset.pmsuse){
+    const m=getPms(pmsPid),a=PILOTS.find(x=>x[0]===m.focus);if(!a)return;const s=pst(m,a),key=selKey(a);if(!key)return;
+    const q=document.getElementById('pmsUseQty'),want=q&&q.value!==''?Math.floor(+q.value):nz(m.inv[key]),n=Math.min(want||0,nz(m.inv[key]));
+    if(n<=0){toast('Enter a quantity');return}
+    m.inv[key]=nz(m.inv[key])-n;s.s=nz(s.s)+n;save();render();return}
   if(t.dataset.rw){const [id,tier]=t.dataset.rw.split('|');const p=P(id);p.rewards[tier]=!p.rewards[tier];save();render();return}
-  if(t.dataset.lgsel){S.targets.cur=t.dataset.lgsel;tgSel='';save();render();return}
-  if(t.dataset.lgadd){const n=prompt('Name of the legion:','Legion '+(S.targets.legions.length+1));if(n&&n.trim()){const l={id:uid(),name:n.trim(),players:[],assign:{},hit:{}};S.targets.legions.push(l);S.targets.cur=l.id;tgSel='';save();render()}return}
-  if(t.dataset.lgren){const L=curL(),n=prompt('Rename legion:',L.name);if(n&&n.trim()){L.name=n.trim();save();render()}return}
-  if(t.dataset.lgdel){const L=curL();if(S.targets.legions.length>1&&confirm('Delete '+L.name+' with its players and targets?')){S.targets.legions=S.targets.legions.filter(x=>x.id!==L.id);S.targets.cur=S.targets.legions[0].id;tgSel='';save();render()}return}
-  if(t.dataset.padd){const n=prompt('Player name:');if(n&&n.trim()){const p={id:uid(),name:n.trim()};curL().players.push(p);tgSel=p.id;save();render()}return}
-  if(t.dataset.pimp){const L=curL();let k=0;S.players.forEach(p=>{if(!L.players.some(x=>x.name.toLowerCase()===p.name.toLowerCase())){L.players.push({id:uid(),name:p.name});k++}});toast(k?k+' player'+(k===1?'':'s')+' added':'Nothing new to add');save();render();return}
-  if(t.dataset.pren){const p=LP(tgSel);if(p){const n=prompt('Rename player:',p.name);if(n&&n.trim()){p.name=n.trim();save();render()}}return}
-  if(t.dataset.pdel){const L=curL(),p=LP(tgSel);if(p&&confirm('Remove '+p.name+' and his targets?')){tgList(p.id).forEach(c=>delete L.hit[p.id+'|'+c]);delete L.assign[p.id];L.players=L.players.filter(x=>x.id!==p.id);tgSel='';save();render()}return}
   if(t.dataset.ptile){const id=t.dataset.ptile;tgSel=tgSel===id?'':id;render();return}
   if(t.dataset.tnone){tgSel='';render();return}
   if(t.dataset.tgt){
-    if(!tgSel||!LP(tgSel)){toast('Select a player first');return}
-    const L=curL(),a=L.assign[tgSel]||(L.assign[tgSel]=[]),c=t.dataset.tgt,i=a.indexOf(c);
-    if(i>=0){a.splice(i,1);delete L.hit[tgSel+'|'+c]}else{a.push(c);a.sort()}
+    if(!tgSel||!P(tgSel)){toast('Select a player first');return}
+    const T=S.targets,a=T.assign[tgSel]||(T.assign[tgSel]=[]),c=t.dataset.tgt,i=a.indexOf(c);
+    if(i>=0){a.splice(i,1);delete T.hit[tgSel+'|'+c]}else{a.push(c);a.sort()}
     save();render();return}
-  if(t.dataset.thit){const L=curL(),k=tgSel+'|'+t.dataset.thit;if(L.hit[k])delete L.hit[k];else L.hit[k]=true;save();render();return}
-  if(t.dataset.tclr){const L=curL();tgList(tgSel).forEach(c=>delete L.hit[tgSel+'|'+c]);L.assign[tgSel]=[];save();render();return}
-  if(t.dataset.tclrhits){if(confirm('Clear all hit ticks? The assigned targets stay.')){curL().hit={};save();render()}return}
-  if(t.dataset.tclrall){if(confirm('Remove ALL assigned targets for every player in '+curL().name+'?')){const L=curL();L.assign={};L.hit={};save();render()}return}
+  if(t.dataset.thit){const T=S.targets,k=tgSel+'|'+t.dataset.thit;if(T.hit[k])delete T.hit[k];else T.hit[k]=true;save();render();return}
+  if(t.dataset.tclr){const T=S.targets;tgList(tgSel).forEach(c=>delete T.hit[tgSel+'|'+c]);T.assign[tgSel]=[];save();render();return}
+  if(t.dataset.tclrhits){if(confirm('Clear all hit ticks? The assigned targets stay.')){S.targets.hit={};save();render()}return}
+  if(t.dataset.tclrall){if(confirm('Remove ALL assigned targets for every player?')){S.targets={assign:{},hit:{}};save();render()}return}
   if(t.dataset.tile){const k=t.dataset.tile;sel=sel===k?'':k;selPk=1;refreshCan();return}
   if(t.dataset.selpk){selPk+=+t.dataset.selpk;refreshCan();return}
   if(t.dataset.cancelsel){sel='';refreshCan();return}
@@ -719,6 +882,13 @@ document.addEventListener('input',e=>{
     const p=P(canPid);if(!p)return;p.focus.qty=clean===''?null:parseInt(clean,10);
     const r=document.getElementById('focusRes');if(r)r.innerHTML=focusRes(p);save();return;
   }
+  if(el.dataset.pms){
+    const clean=el.value.replace(/[^0-9]/g,'');if(clean!==el.value)el.value=clean;
+    const v=clean===''?0:parseInt(clean,10),[g,k]=el.dataset.pms.split('|'),m=getPms(pmsPid);
+    if(g==='inv')m.inv[k]=v;else{const a=PILOTS.find(x=>x[0]===k);if(a)pst(m,a).s=v}
+    save();pmsRefresh();return;
+  }
+  if(el.id==='pmsQ'){pmsQ=el.value;pmsApplyQ();return}
   const d=el.dataset.in;if(!d)return;
   const parts=d.split('|');const p=P(parts[0]);const path=parts.slice(1);
   const [o,k]=getPath(p,path);
@@ -765,8 +935,14 @@ document.addEventListener('change',e=>{
   movePlayer(id,n-1);
 });
 document.addEventListener('change',e=>{
-  if(e.target.id==='lkP'){lkP=e.target.value;render();return}
-  if(e.target.id==='lkT'){lkT=e.target.value;render();return}
+  const el=e.target;
+  if(el.id==='pmsPlayer'){pmsPid=el.value;render();return}
+  if(el.id==='pmsFocusSel'){getPms(pmsPid).focus=el.value;save();render();return}
+  if(el.id==='pmsSort'){pmsSort=el.value;render();return}
+  if(el.dataset&&(el.dataset.pmsst||el.dataset.pmslv)){
+    const a=PILOTS.find(x=>x[0]===(el.dataset.pmsst||el.dataset.pmslv)),s=pst(getPms(pmsPid),a);
+    if(el.dataset.pmsst)s.st=+el.value;else s.up=+el.value;save();render();return}
+  if(el.dataset&&el.dataset.pms)return;
   if(e.target.id==='canPlayer'){canPid=e.target.value;sel='';selPk=1;render();return}
   if(e.target.id==='focusSel'){
     const p=P(canPid);if(!p)return;if(!p.focus)p.focus={item:'',qty:1};
