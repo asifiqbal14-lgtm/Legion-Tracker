@@ -753,7 +753,10 @@ function vPms(){
   const p=P(pmsPid);if(!p)return '<div class="calc">Add a player first.</div>';
   const m=getPms(pmsPid),I=(k,l)=>`<div class="irow"><span>${l}</span><input data-pms="inv|${k}" data-num="1" type="text" inputmode="decimal" value="${val(m.inv[k]||'')}" placeholder="0"></div>`;
   let h=`<div class="calc"><b>Player:</b> <select id="pmsPlayer" style="min-width:170px">${S.players.map((q,i)=>`<option value="${q.id}" ${q.id===pmsPid?'selected':''}>#${i+1} ${esc(q.name)}</option>`).join('')}</select>
-   <span style="color:var(--muted);font-size:12.5px">Pilot shards & inventory below belong to this player only.</span> <button data-pmsrestore="1" title="Re-load the original Maverick pilot data">↺ Restore Maverick data</button></div>
+   <span style="color:var(--muted);font-size:12.5px">Pilot shards & inventory below belong to this player only.</span> <button data-pmsrestore="1" title="Re-load the original Maverick pilot data">↺ Restore Maverick data</button>
+   <button class="btn-accent" data-pmsxl="1" title="Upload an Excel (.xlsx) or CSV pilot sheet for this player">📥 Upload pilot Excel</button>
+   <button data-pmscsv="1" title="Download this player's pilot sheet as CSV (same columns, can be edited and uploaded back)">⬇ Pilot sheet</button>
+   <input type="file" id="pmsXlsx" accept=".xlsx,.csv" hidden></div>
    <div id="pmsFocusWrap">${pmsFocusBox(m)}</div>
    <div class="pms-inv">
     <div class="icard" style="--bc:#facc15"><h4>🎖 Pilot Badges</h4>${I('badges','Badges')}</div>
@@ -810,6 +813,115 @@ function pmsAct(kind){
   save();render();
 }
 
+
+/* ===== Import / export pilot sheet (Excel .xlsx or .csv) ===== */
+async function unzipFile(buf){
+  const dv=new DataView(buf),u8=new Uint8Array(buf);
+  let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;
+  if(e<0)throw new Error('This is not an Excel (.xlsx) file.');
+  const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const out={};
+  for(let i=0;i<n;i++){
+    if(dv.getUint32(p,true)!==0x02014b50)break;
+    const meth=dv.getUint16(p+10,true),csz=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),xl=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),off=dv.getUint32(p+42,true);
+    const name=new TextDecoder().decode(u8.subarray(p+46,p+46+nl));p+=46+nl+xl+cl;
+    if(!/\.(xml|rels)$/.test(name))continue;
+    const lnl=dv.getUint16(off+26,true),lxl=dv.getUint16(off+28,true),ds=off+30+lnl+lxl,raw=u8.subarray(ds,ds+csz);
+    if(meth===0)out[name]=new TextDecoder().decode(raw);
+    else if(meth===8){
+      if(typeof DecompressionStream==='undefined')throw new Error('This browser cannot open .xlsx here. Save the sheet as CSV and upload that instead.');
+      out[name]=await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+    }
+  }
+  return out;
+}
+const xColIdx=ref=>{let n=0;for(const ch of String(ref).replace(/[0-9]/g,''))n=n*26+ch.charCodeAt(0)-64;return n-1};
+function xlsxSheets(files){
+  const dp=new DOMParser(),px=t=>dp.parseFromString(t,'application/xml'),ss=[];
+  if(files['xl/sharedStrings.xml'])px(files['xl/sharedStrings.xml']).querySelectorAll('si').forEach(si=>{
+    ss.push([...si.children].filter(c=>c.localName!=='rPh').map(c=>[...c.querySelectorAll('t')].map(t=>t.textContent).join('')||(c.localName==='t'?c.textContent:'')).join(''))});
+  let paths=[];
+  try{
+    const tm={};px(files['xl/_rels/workbook.xml.rels']).querySelectorAll('Relationship').forEach(r=>tm[r.getAttribute('Id')]=r.getAttribute('Target'));
+    px(files['xl/workbook.xml']).querySelectorAll('sheet').forEach(sh=>{const t=tm[sh.getAttribute('r:id')];if(t)paths.push(t.charAt(0)==='/'?t.slice(1):'xl/'+t)});
+  }catch(_){}
+  if(!paths.length)paths=Object.keys(files).filter(k=>/^xl\/worksheets\/sheet\d+\.xml$/.test(k)).sort();
+  return paths.filter(p=>files[p]).map(p=>{
+    const rows=[];
+    px(files[p]).querySelectorAll('row').forEach(r=>{
+      const arr=[];
+      r.querySelectorAll('c').forEach(c=>{
+        const t=c.getAttribute('t'),ref=c.getAttribute('r'),v=c.querySelector('v');let val=null;
+        if(t==='s')val=v?ss[+v.textContent]:null;
+        else if(t==='inlineStr')val=[...c.querySelectorAll('t')].map(x=>x.textContent).join('');
+        else if(v)val=(t==='str'||t==='e'||t==='b'||isNaN(+v.textContent))?v.textContent:+v.textContent;
+        arr[ref?xColIdx(ref):arr.length]=val;
+      });
+      rows.push(arr);
+    });
+    return rows;
+  });
+}
+function parseCsv(txt){
+  const rows=[];let row=[],cur='',q=false;
+  txt=txt.replace(/^﻿/,'');
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(q){if(c==='"'){if(txt[i+1]==='"'){cur+='"';i++}else q=false}else cur+=c}
+    else if(c==='"')q=true;
+    else if(c===','||c===';'||c==='\t'){row.push(cur);cur=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&txt[i+1]==='\n')i++;row.push(cur);rows.push(row);row=[];cur=''}
+    else cur+=c;
+  }
+  if(cur!==''||row.length){row.push(cur);rows.push(row)}
+  return rows;
+}
+const pNorm=x=>String(x==null?'':x).toLowerCase().replace(/[^a-z0-9]/g,'');
+function readPilotRows(rows){
+  let hi=-1,cn=-1;
+  for(let i=0;i<Math.min(rows.length,15)&&hi<0;i++){
+    const r=rows[i]||[];
+    for(let c=0;c<r.length;c++){const k=pNorm(r[c]);if(k==='pilotname'||k==='pilot'||k==='name'){hi=i;cn=c;break}}
+  }
+  if(hi<0)return null;
+  const H=(rows[hi]||[]).map(pNorm);
+  const find=(re)=>H.findIndex(h=>re.test(h));
+  const cs=find(/shard/),ct=find(/star/),cu=find(/upgrade|level/);
+  const byName={};PILOTS.forEach(a=>{byName[pNorm(a[0])]=a});
+  const found={},unknown=[];
+  for(let i=hi+1;i<rows.length;i++){
+    const r=rows[i]||[];const nm=r[cn];if(nm==null||String(nm).trim()==='')continue;
+    const a=byName[pNorm(nm)];
+    if(!a){unknown.push(String(nm).trim());continue}
+    const num=v=>{const n=parseFloat(String(v==null?'':v).replace(/,/g,''));return isNaN(n)?0:Math.max(0,Math.round(n))};
+    const star=v=>{if(v==null||v==='')return 0;if(typeof v==='number')return Math.max(-1,Math.min(7,Math.round(v)));const t=String(v).toLowerCase();if(/awak/.test(t))return 7;if(/lock/.test(t))return -1;const n=parseInt(t.replace(/[^0-9]/g,''),10);return isNaN(n)?0:Math.min(7,n)};
+    found[a[0]]={s:cs>=0?num(r[cs]):0,st:ct>=0?star(r[ct]):0,up:cu>=0?Math.min(10,num(r[cu])):0};
+  }
+  return {found,unknown};
+}
+async function importPilotFile(file){
+  try{
+    let res=null;
+    if(/\.csv$/i.test(file.name)||file.type==='text/csv')res=readPilotRows(parseCsv(await file.text()));
+    else{const sheets=xlsxSheets(await unzipFile(await file.arrayBuffer()));for(const rows of sheets){res=readPilotRows(rows);if(res)break}}
+    if(!res)throw new Error('Could not find a "Pilot Name" column. Use the same columns as the template (Pilot Name, Available Shards, Star Status, Upgrade Status).');
+    const n=Object.keys(res.found).length;
+    if(!n)throw new Error('No pilot names in this file matched the pilot list.');
+    const pl=P(pmsPid);
+    if(!confirm('Import '+n+' pilots into '+(pl?pl.name:'this player')+'?\n\nThis overwrites their pilot shards, star status and upgrade level for those pilots. Other pilots and the inventory are not touched.'))return;
+    const m=getPms(pmsPid);
+    Object.entries(res.found).forEach(([k,v])=>{m.p[k]={s:v.s,st:v.st,up:v.up}});
+    m._seeded=true;save();render();
+    if(res.unknown.length)alert('Imported '+n+' pilots.\n\nNot recognised (skipped): '+res.unknown.slice(0,15).join(', ')+(res.unknown.length>15?' …':''));
+    else toast('Imported '+n+' pilots');
+  }catch(err){alert('Import failed: '+(err&&err.message||err))}
+}
+function exportPilotCsv(){
+  const m=getPms(pmsPid),pl=P(pmsPid),q=v=>{v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const head=['Sr. No.','Category','Pilot Name','Attribute','Available Shards','Passive Skills','Star Status','Upgrade Status'];
+  const rows=PILOTS.map((a,i)=>{const s=pst(m,a);return [i+1,a[1],a[0],a[2],s.s||'',a[3],s.st>=7?'Awakened':s.st<0?'Locked':s.st,s.up||'']});
+  dl('Pilot_Attributes-'+(pl?pl.name.replace(/[^A-Za-z0-9]+/g,'_'):'player')+'.csv','text/csv;charset=utf-8','﻿'+[head,...rows].map(r=>r.map(q).join(',')).join('\r\n'));
+}
+
 /* ============ LOGIC ============ */
 const bcls=o=>o==='Advance'?'b-adv':o==='Unchanged'?'b-same':'b-dem';
 function tierOutcome(tier,rank){
@@ -839,6 +951,8 @@ document.addEventListener('click',e=>{
   if(t.dataset.allg){const [id,gi]=t.dataset.allg.split('|');const p=P(id),keys=DAILY_GROUPS[+gi].cols.map(c=>c[0]);const allOn=keys.every(k=>p.daily[k]);keys.forEach(k=>p.daily[k]=!allOn);save();render();return}
   if(t.dataset.pmssel){getPms(pmsPid).focus=t.dataset.pmssel;save();render();const d=document.getElementById('pmsFocus');if(d)d.scrollIntoView({block:'start'});return}
   if(t.dataset.pmsrestore){restoreMaverick();return}
+  if(t.dataset.pmsxl){document.getElementById('pmsXlsx').click();return}
+  if(t.dataset.pmscsv){exportPilotCsv();return}
   if(t.dataset.pmsall){pmsShowAll=!pmsShowAll;render();return}
   if(t.dataset.pmsclose){getPms(pmsPid).focus='';save();render();return}
   if(t.dataset.pmsfil){pmsFil=t.dataset.pmsfil;render();return}
@@ -958,6 +1072,7 @@ document.addEventListener('change',e=>{
 document.addEventListener('change',e=>{
   const el=e.target;
   if(el.id==='pmsPlayer'){pmsPid=el.value;render();return}
+  if(el.id==='pmsXlsx'){const f=el.files[0];el.value='';if(f)importPilotFile(f);return}
   if(el.id==='pmsSkillSel'){pmsSkill=el.value;render();return}
   if(el.id==='pmsFocusSel'){getPms(pmsPid).focus=el.value;save();render();return}
   if(el.id==='pmsSort'){pmsSort=el.value;render();return}
