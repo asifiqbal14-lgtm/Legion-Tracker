@@ -921,7 +921,7 @@ function pmsTop(m){
   const rows=pmsRows(m);
   const mk=(key,title,cls)=>{
     const l=rows.filter(r=>r[key]&&r[key].pct>0).sort((x,y)=>(y[key].ok-x[key].ok)||(y[key].pct-x[key].pct)).slice(0,5);
-    return `<div class="icard" style="--bc:${key==='evo'?'#38bdf8':'#f472b6'}"><h4>${title}</h4>${l.length?l.map(r=>`<button class="r-${r.a[1]}" data-pmssel="${esc(r.a[0])}" style="border-color:var(--bc)"><b>${esc(r.a[0])}</b> <span class="rar">${r.a[1]}</span> <small style="display:inline">${key==='evo'?starTxt(r.s.st)+' → next':'Lv '+r.s.up+' → '+(r.s.up+1)}</small>${pbar(r[key],'',cls)}${chips(m,r.s,key==='evo'?evoNeed(r.a,r.s.st):upNeed(r.a,r.s.up))}</button>`).join(''):'<small>No data yet</small>'}</div>`};
+    return `<div class="icard" style="--bc:${key==='evo'?'#38bdf8':'#f472b6'}"><h4>${title}</h4>${l.length?l.map(r=>`<button class="r-${r.a[1]}" data-pmssel="${esc(r.a[0])}" style="border-color:var(--bc)"><b>${esc(r.a[0])}</b> <span class="rar">${r.a[1]}</span> <small style="display:inline">${key==='evo'?starTxt(r.s.st)+' → next':'Lv '+r.s.up+' → '+(r.s.up+1)}</small>${pbar(r[key],'',cls)}${chips(m,r.s,key==='evo'?evoNeed(r.a,r.s.st):upNeed(r.a,r.s.up))}<div class="rqs" style="margin-top:4px">${String(r.a[2]).split('+').map(x=>`<span class="rq ok" style="font-weight:700">${esc(x)}</span>`).join(' ')}</div></button>`).join(''):'<small>No data yet</small>'}</div>`};
   return `<div class="top5">${mk('evo','⭐ Closest to EVOLVE','')}${mk('upg','⬆ Closest to UPGRADE','up')}</div>`;
 }
 const RIC={badges:'🎖',shards:'🧩',gold:'🟡',purple:'🟣',blue:'🔵',gBasic:'📗',gStd:'📘',gAdv:'📙',gExp:'📕'};
