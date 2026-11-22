@@ -303,11 +303,23 @@ td .av{--s:22px}
   nav button{padding:9px 16px}
   .card,.calc{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(20,26,48,.72)}
 }
+
+#askBg{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:99999;padding:16px}
+#askBg.on{display:flex}
+#askBox{background:#14182b;border:1px solid #3a4470;border-radius:14px;max-width:420px;width:100%;padding:18px;color:#e8ecff;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#askBox h3{margin:0 0 8px;font-size:17px}
+#askBox .ab{font-size:14px;line-height:1.5}
+#askBox table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+#askBox td{padding:4px 6px;border-bottom:1px solid #2a3150}
+#askBox td:last-child{text-align:right}
+#askBox .ar{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+#askBox button{padding:9px 18px;border-radius:9px;border:1px solid #3a4470;background:#222a4a;color:#fff;font-size:14px;cursor:pointer}
+#askBox button.y{background:#2f6bff;border-color:#2f6bff;font-weight:600}
 </style>
 </head>
 <body>
 <header>
-  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v30</small></h1>
+  <h1>⚔ Legion Daily Activity Tracker <small style="color:#7dffa8;font-weight:400">v31</small></h1>
   <span class="date" id="dateLbl"></span>
   <span class="sp"></span>
   <button id="btnDay" title="Reset all daily Done buttons to red">🌅 New Day</button>
@@ -856,6 +868,7 @@ const UPG={
  R:[['gBasic',50],['gBasic',100],['gStd',50],['gStd',100],['gAdv',50],['gAdv',100],['gAdv',200],['gExp',100],['gExp',125],['gExp',150]]
 };
 const RESN={badges:'Pilot Badges',gold:'Golden Pieces',purple:'Purple Pieces',blue:'Blue Pieces',shards:'Pilot Shards',gBasic:'Basic Guides',gStd:'Standard Guides',gAdv:'Advanced Guides',gExp:'Expert Guides'};
+let pmsHideInv=(()=>{try{return localStorage.getItem('pmsHideInv')==='1'}catch(e){return false}})();
 let pmsSkill='',pmsShowAll=false,pmsPid='',pmsFil='ALL',pmsSort='evo',pmsQ='';
 const nz=v=>(+v||0);
 function getPms(pid){
@@ -941,6 +954,7 @@ function pmsFocusLive(m){
     <div><b>⬆ Upgrade${un?' – next: Lv '+(s.up+1):''}</b><div style="margin:4px 0">Level ${s.up} / 10</div>${needList(m,s,un,stateTxt('upg',a,s))}
       ${un?`<div style="margin-top:8px"><button class="btn-accent" data-pmsdo="upg" ${up&&up.ok?'':'disabled'}>Upgrade to Lv ${s.up+1} now</button></div>`:''}</div>
    </div>
+   <div style="margin-top:10px"><small style="color:var(--muted)">Basic attributes:</small> ${String(a[2]).split('+').map(x=>`<span class="rq ok" style="font-weight:700">${esc(x)}</span>`).join(' ')}</div>
    ${sk?`<div style="margin-top:10px"><small>${sn} in stock: <b>${sel}</b></small> <button data-pmsuse="1" ${sel>0?'':'disabled'}>Convert → ${esc(a[0])} shards</button> <input id="pmsUseQty" data-num="1" type="text" inputmode="decimal" placeholder="qty" style="width:70px"></div>`:''}`;
 }
 function pmsFocusBox(m){
@@ -968,7 +982,8 @@ function vPms(){
    <button data-pmscsv="1" title="Download this player's pilot sheet as CSV (same columns, can be edited and uploaded back)">⬇ Pilot sheet</button>
    <input type="file" id="pmsXlsx" accept=".xlsx,.csv" hidden></div>
    <div id="pmsFocusWrap">${pmsFocusBox(m)}</div>
-   <div class="pms-inv">
+   <p style="margin:0 0 8px"><button data-pmshideinv="1">${pmsHideInv?'👁 Show inventory (badges, pieces, guides)':'🙈 Hide inventory (badges, pieces, guides)'}</button></p>
+   <div class="pms-inv" ${pmsHideInv?'style="display:none"':''}>
     <div class="icard" style="--bc:#facc15"><h4>🎖 Pilot Badges</h4>${I('badges','Badges')}</div>
     <div class="icard" style="--bc:#c084fc"><h4>💎 Pieces</h4>${I('gold','🟡 Golden (SR selectable)')}${I('purple','🟣 Purple (R selectable)')}${I('blue','🔵 Blue (N selectable)')}</div>
     <div class="icard" style="--bc:#4ade80"><h4>📘 Training Guides</h4>${GUIDE.map(g=>I(g[0],g[1])).join('')}</div>
@@ -1012,15 +1027,29 @@ function pmsRefresh(){
     i.value=v?v:'';
   });
 }
+function askConfirm(title,html,onYes){
+  let bg=document.getElementById('askBg');
+  if(!bg){bg=document.createElement('div');bg.id='askBg';bg.innerHTML='<div id="askBox"><h3></h3><div class="ab"></div><div class="ar"><button class="n">Cancel</button><button class="y">Yes, do it</button></div></div>';document.body.appendChild(bg)}
+  bg.querySelector('h3').textContent=title;bg.querySelector('.ab').innerHTML=html;
+  const close=()=>bg.classList.remove('on');
+  bg.querySelector('.n').onclick=close;
+  bg.querySelector('.y').onclick=()=>{close();onYes()};
+  bg.classList.add('on');
+}
 function pmsAct(kind){
   const m=getPms(pmsPid),a=PILOTS.find(x=>x[0]===m.focus);if(!a)return;const s=pst(m,a);
   const need=kind==='evo'?evoNeed(a,s.st):upNeed(a,s.up);const pr=prog(m,s,need);
   if(!need||!pr||!pr.ok){toast('Not enough resources');return}
-  const txt=need.map(([k,n])=>n+' '+RESN[k]).join(', ');
-  if(!confirm((kind==='evo'?'Evolve ':'Upgrade ')+a[0]+'? This spends: '+txt))return;
-  need.forEach(([k,n])=>{if(k==='shards')s.s=nz(s.s)-n;else m.inv[k]=nz(m.inv[k])-n});
-  if(kind==='evo')s.st+=1;else s.up+=1;
-  save();render();
+  const have=k=>k==='shards'?nz(s.s):nz(m.inv[k]);
+  const rows=need.map(([k,n])=>'<tr><td>'+RESN[k]+'</td><td>'+have(k)+' &minus; '+n+' = <b>'+(have(k)-n)+'</b></td></tr>').join('');
+  const from=kind==='evo'?s.st+'\u2605':'Lv '+s.up, to=kind==='evo'?(s.st+1)+'\u2605':'Lv '+(s.up+1);
+  askConfirm((kind==='evo'?'Evolve ':'Upgrade ')+a[0]+': '+from+' \u2192 '+to,
+    'All requirements are met. These resources will be deducted:<table>'+rows+'</table>',
+    ()=>{
+      need.forEach(([k,n])=>{if(k==='shards')s.s=nz(s.s)-n;else m.inv[k]=nz(m.inv[k])-n});
+      if(kind==='evo')s.st+=1;else s.up+=1;
+      save();render();toast(a[0]+' advanced to '+to);
+    });
 }
 
 
@@ -1163,6 +1192,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.pmsrestore){restoreMaverick();return}
   if(t.dataset.pmsxl){document.getElementById('pmsXlsx').click();return}
   if(t.dataset.pmscsv){exportPilotCsv();return}
+  if(t.dataset.pmshideinv){pmsHideInv=!pmsHideInv;try{localStorage.setItem('pmsHideInv',pmsHideInv?'1':'0')}catch(e){}render();return}
   if(t.dataset.pmsall){pmsShowAll=!pmsShowAll;render();return}
   if(t.dataset.pmsclose){getPms(pmsPid).focus='';save();render();return}
   if(t.dataset.pmsfil){pmsFil=t.dataset.pmsfil;render();return}
